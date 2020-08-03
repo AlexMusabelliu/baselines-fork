@@ -73,6 +73,7 @@ def train(args, extra_args, unknown_args):
 
     print('Training {} on {}:{} with arguments \n{}'.format(args.alg, env_type, env_id, alg_kwargs))
     per = unknown_args[1]
+    print(f"percent: {per}")
     model = learn(
         env=env,
         seed=seed,
