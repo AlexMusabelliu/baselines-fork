@@ -176,7 +176,7 @@ def build_policy(env, policy_network, value_network=None,  normalize_observation
             vf_latent=vf_latent,
             sess=sess,
             estimate_q=estimate_q,
-            percent=percent
+            percent=percent,
             **extra_tensors
         )
         return policy
