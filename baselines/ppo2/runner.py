@@ -21,7 +21,7 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
     if percent > 1:
         percent = 1
 
-    if not attention:
+    if attention == None:
         m = gen() if callable(gen) else gen if type(gen) == list else None if gen == None else False
         
         if not m:
