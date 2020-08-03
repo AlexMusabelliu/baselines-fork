@@ -77,7 +77,7 @@ def train(args, extra_args, unknown_args):
         env=env,
         seed=seed,
         total_timesteps=total_timesteps,
-        percent=per
+        percent=per,
         **alg_kwargs
     )
 
