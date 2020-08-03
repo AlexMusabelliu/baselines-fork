@@ -50,7 +50,7 @@ _game_envs['retro'] = {
 }
 
 
-def train(args, extra_args):
+def train(args, extra_args, unknown_args):
     env_type, env_id = get_env_type(args)
     print('env_type: {}'.format(env_type))
 
@@ -77,7 +77,7 @@ def train(args, extra_args):
         env=env,
         seed=seed,
         total_timesteps=total_timesteps,
-        **alg_kwargs + extra_args.percent
+        **alg_kwargs + unknown_args
     )
 
     return model, env
@@ -213,7 +213,7 @@ def main(args):
         rank = MPI.COMM_WORLD.Get_rank()
         configure_logger(args.log_path, format_strs=[])
 
-    model, env = train(args, extra_args)
+    model, env = train(args, extra_args, unknown_args)
 
     if args.save_path is not None and rank == 0:
         save_path = osp.expanduser(args.save_path)
