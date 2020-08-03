@@ -41,7 +41,7 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
         print(f"Size of attention tensor: {tf.size(attention)}\nShape of attnetion tensor: {tf.shape(attention)}\nSize/Shape of data: {tf.size(data)} / {tf.shape(data)}")
         with tf.Session() as sess:
             aflat = tf.reshape(attention, [-1])
-            m = tf.contrib.framework.sort(aflat, axis=-1, direction="ASCENDING").eval(session=sess)
+            m = tf.sort(aflat, axis=-1, direction="ASCENDING").eval(session=sess)
             ma = m[m.size * percent // 1]
 
             result = tf.map_fn(lambda x: 0 if x < ma else x, attention)
