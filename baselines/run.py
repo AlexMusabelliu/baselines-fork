@@ -72,7 +72,7 @@ def train(args, extra_args, unknown_args):
             alg_kwargs['network'] = get_default_network(env_type)
 
     print('Training {} on {}:{} with arguments \n{}'.format(args.alg, env_type, env_id, alg_kwargs))
-
+    print(unknown_args)
     model = learn(
         env=env,
         seed=seed,
