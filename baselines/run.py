@@ -72,12 +72,13 @@ def train(args, extra_args, unknown_args):
             alg_kwargs['network'] = get_default_network(env_type)
 
     print('Training {} on {}:{} with arguments \n{}'.format(args.alg, env_type, env_id, alg_kwargs))
-    print(unknown_args)
+    per = unknown_args[1]
     model = learn(
         env=env,
         seed=seed,
         total_timesteps=total_timesteps,
-        **alg_kwargs + unknown_args
+        percent=per
+        **alg_kwargs
     )
 
     return model, env
