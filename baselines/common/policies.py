@@ -155,6 +155,7 @@ def build_policy(env, policy_network, value_network=None,  normalize_observation
 
 
         _v_net = value_network
+        print(_v_net)
 
         if _v_net is None or _v_net == 'shared':
             vf_latent = policy_latent
