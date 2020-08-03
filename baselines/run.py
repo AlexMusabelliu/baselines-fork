@@ -77,7 +77,7 @@ def train(args, extra_args):
         env=env,
         seed=seed,
         total_timesteps=total_timesteps,
-        **alg_kwargs + args.percent
+        **alg_kwargs + extra_args.percent
     )
 
     return model, env
