@@ -43,6 +43,7 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
         m = tf.gather(aflat, tf.nn.top_k(aflat, k=tf.size(aflat)).indices)
         #m = tf.sort(aflat, axis=-1, direction="ASCENDING").eval()
         msize = m.get_shape().as_list()[0]
+        print(type(msize))
         ma = m[msize * percent // 1]
 
         result = tf.map_fn(lambda x: 0 if x < ma else x, attention)
