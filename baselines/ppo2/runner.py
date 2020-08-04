@@ -64,7 +64,7 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
         ma = tf.slice(m, [int(msize * percent)], [1])
         print(tf.size(ma), tf.shape(ma), ma)
         print(type(data), data.shape)
-        result = np.ma.filled(np.ma.masked_where(tf.reduce_mean(tf.constant(a) - ma) < 0, data), fill_value=0)
+        result = np.ma.filled(np.ma.masked_where(tf.reduce_mean(tf.constant(data) - ma) < 0, data), fill_value=0)
         
         print(f"---*****Size/shape of mod tensor: {tf.size(result)} / {tf.shape(result)}")
         
