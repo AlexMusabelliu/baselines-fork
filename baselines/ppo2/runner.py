@@ -44,7 +44,7 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
         #m = tf.sort(aflat, axis=-1, direction="ASCENDING").eval()
         msize = m.get_shape().as_list()[0]
         print(type(msize))
-        ma = m[msize * percent // 1]
+        ma = tf.gather_nd(m, msize * percent // 1)
 
         result = tf.map_fn(lambda x: 0 if x < ma else x, attention)
         print(f"---*****Size/shape of mod tensor: {tf.size(result)} / {tf.shape(result)}")
