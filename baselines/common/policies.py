@@ -75,6 +75,20 @@ class PolicyWithValue(object):
 
         return sess.run(variables, feed_dict)
 
+    def _qeval(self, variables, observation, **extra_feed):
+        sess = self.sess
+        feed_dict = {self.X: adjust_shape(self.X, observation)}
+        for inpt_name, data in extra_feed.items():
+            if inpt_name in self.__dict__.keys():
+                inpt = self.__dict__[inpt_name]
+                if isinstance(inpt, tf.Tensor) and inpt._op.type == 'Placeholder':
+                    feed_dict[inpt] = adjust_shape(inpt, data)
+
+        return sess, feed_dict
+
+    def qeval(self):
+        return self._qeval([self.action, self.vf, self.state, self.neglogp], observation, **extra_feed)
+
     def step(self, observation, **extra_feed):
         """
         Compute next action(s) given the observation(s)

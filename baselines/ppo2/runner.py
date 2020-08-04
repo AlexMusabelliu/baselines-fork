@@ -3,7 +3,7 @@ from baselines.common.runners import AbstractEnvRunner
 import random
 import tensorflow as tf
 
-def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
+def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None, sess=None, fd=None):
     '''
     Args:
         data - the tensor / matrix to occlude
@@ -62,7 +62,7 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
         #m = tf .sort(aflat, axis=-1, direction="ASCENDING").eval()
         msize = m.get_shape().as_list()[0]
         print(type(msize))
-        ma = tf.slice(m, [int(msize * percent)], [1])
+        ma = tf.slice(m, [int(msize * percent)], [1]).eval(feed_dict=fd, session=sess)
         print(tf.size(ma), tf.shape(ma), ma)
         print(type(data), data.shape)
         result = np.ma.filled(np.ma.masked_where(tf.reduce_mean(tf.constant(data) - ma) < 0, data), fill_value=0)
@@ -98,7 +98,8 @@ class Runner(AbstractEnvRunner):
             # We already have self.obs because Runner superclass run self.obs[:] = env.reset() on init
 
             if iter_step != 0:
-                self.obs = occlude(self.obs, percent=self.model.act_model.__dict__.get("percent"), attention=self.model.act_model.__dict__.get("extra"))
+                qs, qfd = self.model.act_model.qeval()
+                self.obs = occlude(self.obs, percent=self.model.act_model.__dict__.get("percent"), attention=self.model.act_model.__dict__.get("extra"), sess=qs, fd=qfd)
 
             actions, values, self.states, neglogpacs = self.model.step(self.obs, S=self.states, M=self.dones)
             mb_obs.append(self.obs.copy())
