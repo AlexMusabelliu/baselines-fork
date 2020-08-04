@@ -86,7 +86,7 @@ class PolicyWithValue(object):
 
         return sess, feed_dict
 
-    def qeval(self):
+    def qeval(self, observation, **extra_feed):
         return self._qeval([self.action, self.vf, self.state, self.neglogp], observation, **extra_feed)
 
     def step(self, observation, **extra_feed):

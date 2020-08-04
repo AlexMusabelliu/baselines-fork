@@ -65,7 +65,7 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None, ses
         ma = tf.slice(m, [int(msize * percent)], [1]).eval(feed_dict=fd, session=sess)
         print(tf.size(ma), tf.shape(ma), ma)
         print(type(data), data.shape)
-        result = np.ma.filled(np.ma.masked_where(tf.reduce_mean(tf.constant(data) - ma) < 0, data), fill_value=0)
+        result = np.ma.filled(np.ma.masked_where(data < ma, data), fill_value=0)
         
         print(f"---*****Size/shape of mod tensor: {tf.size(result)} / {tf.shape(result)}")
         
@@ -98,7 +98,7 @@ class Runner(AbstractEnvRunner):
             # We already have self.obs because Runner superclass run self.obs[:] = env.reset() on init
 
             if iter_step != 0:
-                qs, qfd = self.model.act_model.qeval()
+                qs, qfd = self.model.act_model.qeval(self.obs, S=self.states, M=self.dones)
                 self.obs = occlude(self.obs, percent=self.model.act_model.__dict__.get("percent"), attention=self.model.act_model.__dict__.get("extra"), sess=qs, fd=qfd)
 
             actions, values, self.states, neglogpacs = self.model.step(self.obs, S=self.states, M=self.dones)
