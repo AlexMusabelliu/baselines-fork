@@ -17,7 +17,12 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
     Returns:
         mod - modified tensor with occlusion
     '''
-
+    def recursive_map(inputs):
+        if tf.shape(inputs).ndims > 0:
+            return tf.map_fn(recursive_map, inputs)
+        else:
+            return tf.cond(tf.math.less(inputs, ma), lambda: tf.constant(0), lambda: tf.constant(inputs))
+        
     if percent > 1:
         percent = 1
 
@@ -46,7 +51,7 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
         print(type(msize))
         ma = tf.slice(m, [int(msize * percent)], [1])
         print(tf.size(ma), tf.shape(ma), ma)
-        result = tf.map_fn(lambda x: tf.cond(tf.math.less(x, ma), lambda: tf.constant(0), lambda: tf.constant(x)), attention)
+        result = recursive_map(attention)
         print(f"---*****Size/shape of mod tensor: {tf.size(result)} / {tf.shape(result)}")
         
     return result

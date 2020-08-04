@@ -1,0 +1,1542 @@
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mdeleted file mode 100644[m
+[1mindex a41103d..0000000[m
+[1m--- a/.gitignore[m
+[1m+++ /dev/null[m
+[36m@@ -1,36 +0,0 @@[m
+[31m-*.swp[m
+[31m-*.pyc[m
+[31m-*.pkl[m
+[31m-*.py~[m
+[31m-.pytest_cache[m
+[31m-.DS_Store[m
+[31m-.idea[m
+[31m-[m
+[31m-# Setuptools distribution and build folders.[m
+[31m-/dist/[m
+[31m-/build[m
+[31m-keys/[m
+[31m-[m
+[31m-# Virtualenv[m
+[31m-/env[m
+[31m-[m
+[31m-[m
+[31m-*.sublime-project[m
+[31m-*.sublime-workspace[m
+[31m-[m
+[31m-.idea[m
+[31m-[m
+[31m-logs/[m
+[31m-[m
+[31m-.ipynb_checkpoints[m
+[31m-ghostdriver.log[m
+[31m-[m
+[31m-htmlcov[m
+[31m-[m
+[31m-junk[m
+[31m-src[m
+[31m-[m
+[31m-*.egg-info[m
+[31m-.cache[m
+[31m-[m
+[31m-MUJOCO_LOG.TXT[m
+[1mdiff --git a/README.md b/README.md[m
+[1mindex 6a0b08d..8b13789 100644[m
+[1m--- a/README.md[m
+[1m+++ b/README.md[m
+[36m@@ -1,160 +1 @@[m
+[31m-**Status:** Active (under active development, breaking changes may occur)[m
+[31m-[m
+[31m-<img src="data/logo.jpg" width=25% align="right" /> [![Build status](https://travis-ci.org/openai/baselines.svg?branch=master)](https://travis-ci.org/openai/baselines)[m
+[31m-[m
+[31m-# Baselines[m
+[31m-[m
+[31m-OpenAI Baselines is a set of high-quality implementations of reinforcement learning algorithms.[m
+[31m-[m
+[31m-These algorithms will make it easier for the research community to replicate, refine, and identify new ideas, and will create good baselines to build research on top of. Our DQN implementation and its variants are roughly on par with the scores in published papers. We expect they will be used as a base around which new ideas can be added, and as a tool for comparing a new approach against existing ones. [m
+[31m-[m
+[31m-## Prerequisites [m
+[31m-Baselines requires python3 (>=3.5) with the development headers. You'll also need system packages CMake, OpenMPI and zlib. Those can be installed as follows[m
+[31m-### Ubuntu [m
+[31m-    [m
+[31m-```bash[m
+[31m-sudo apt-get update && sudo apt-get install cmake libopenmpi-dev python3-dev zlib1g-dev[m
+[31m-```[m
+[31m-    [m
+[31m-### Mac OS X[m
+[31m-Installation of system packages on Mac requires [Homebrew](https://brew.sh). With Homebrew installed, run the following:[m
+[31m-```bash[m
+[31m-brew install cmake openmpi[m
+[31m-```[m
+[31m-    [m
+[31m-## Virtual environment[m
+[31m-From the general python package sanity perspective, it is a good idea to use virtual environments (virtualenvs) to make sure packages from different projects do not interfere with each other. You can install virtualenv (which is itself a pip package) via[m
+[31m-```bash[m
+[31m-pip install virtualenv[m
+[31m-```[m
+[31m-Virtualenvs are essentially folders that have copies of python executable and all python packages.[m
+[31m-To create a virtualenv called venv with python3, one runs [m
+[31m-```bash[m
+[31m-virtualenv /path/to/venv --python=python3[m
+[31m-```[m
+[31m-To activate a virtualenv: [m
+[31m-```[m
+[31m-. /path/to/venv/bin/activate[m
+[31m-```[m
+[31m-More thorough tutorial on virtualenvs and options can be found [here](https://virtualenv.pypa.io/en/stable/) [m
+[31m-[m
+[31m-[m
+[31m-## Installation[m
+[31m-- Clone the repo and cd into it:[m
+[31m-    ```bash[m
+[31m-    git clone https://github.com/openai/baselines.git[m
+[31m-    cd baselines[m
+[31m-    ```[m
+[31m-- If you don't have TensorFlow installed already, install your favourite flavor of TensorFlow. In most cases, [m
+[31m-    ```bash [m
+[31m-    pip install tensorflow-gpu # if you have a CUDA-compatible gpu and proper drivers[m
+[31m-    ```[m
+[31m-    or [m
+[31m-    ```bash[m
+[31m-    pip install tensorflow[m
+[31m-    ```[m
+[31m-    should be sufficient. Refer to [TensorFlow installation guide](https://www.tensorflow.org/install/)[m
+[31m-    for more details. [m
+[31m-[m
+[31m-- Install baselines package[m
+[31m-    ```bash[m
+[31m-    pip install -e .[m
+[31m-    ```[m
+[31m-[m
+[31m-### MuJoCo[m
+[31m-Some of the baselines examples use [MuJoCo](http://www.mujoco.org) (multi-joint dynamics in contact) physics simulator, which is proprietary and requires binaries and a license (temporary 30-day license can be obtained from [www.mujoco.org](http://www.mujoco.org)). Instructions on setting up MuJoCo can be found [here](https://github.com/openai/mujoco-py)[m
+[31m-[m
+[31m-## Testing the installation[m
+[31m-All unit tests in baselines can be run using pytest runner:[m
+[31m-```[m
+[31m-pip install pytest[m
+[31m-pytest[m
+[31m-```[m
+[31m-[m
+[31m-## Training models[m
+[31m-Most of the algorithms in baselines repo are used as follows:[m
+[31m-```bash[m
+[31m-python -m baselines.run --alg=<name of the algorithm> --env=<environment_id> [additional arguments][m
+[31m-```[m
+[31m-### Example 1. PPO with MuJoCo Humanoid[m
+[31m-For instance, to train a fully-connected network controlling MuJoCo humanoid using PPO2 for 20M timesteps[m
+[31m-```bash[m
+[31m-python -m baselines.run --alg=ppo2 --env=Humanoid-v2 --network=mlp --num_timesteps=2e7[m
+[31m-```[m
+[31m-Note that for mujoco environments fully-connected network is default, so we can omit `--network=mlp`[m
+[31m-The hyperparameters for both network and the learning algorithm can be controlled via the command line, for instance:[m
+[31m-```bash[m
+[31m-python -m baselines.run --alg=ppo2 --env=Humanoid-v2 --network=mlp --num_timesteps=2e7 --ent_coef=0.1 --num_hidden=32 --num_layers=3 --value_network=copy[m
+[31m-```[m
+[31m-will set entropy coefficient to 0.1, and construct fully connected network with 3 layers with 32 hidden units in each, and create a separate network for value function estimation (so that its parameters are not shared with the policy network, but the structure is the same)[m
+[31m-[m
+[31m-See docstrings in [common/models.py](baselines/common/models.py) for description of network parameters for each type of model, and [m
+[31m-docstring for [baselines/ppo2/ppo2.py/learn()](baselines/ppo2/ppo2.py#L152) for the description of the ppo2 hyperparameters. [m
+[31m-[m
+[31m-### Example 2. DQN on Atari [m
+[31m-DQN with Atari is at this point a classics of benchmarks. To run the baselines implementation of DQN on Atari Pong:[m
+[31m-```[m
+[31m-python -m baselines.run --alg=deepq --env=PongNoFrameskip-v4 --num_timesteps=1e6[m
+[31m-```[m
+[31m-[m
+[31m-## Saving, loading and visualizing models[m
+[31m-[m
+[31m-### Saving and loading the model[m
+[31m-The algorithms serialization API is not properly unified yet; however, there is a simple method to save / restore trained models. [m
+[31m-`--save_path` and `--load_path` command-line option loads the tensorflow state from a given path before training, and saves it after the training, respectively. [m
+[31m-Let's imagine you'd like to train ppo2 on Atari Pong,  save the model and then later visualize what has it learnt.[m
+[31m-```bash[m
+[31m-python -m baselines.run --alg=ppo2 --env=PongNoFrameskip-v4 --num_timesteps=2e7 --save_path=~/models/pong_20M_ppo2[m
+[31m-```[m
+[31m-This should get to the mean reward per episode about 20. To load and visualize the model, we'll do the following - load the model, train it for 0 steps, and then visualize: [m
+[31m-```bash[m
+[31m-python -m baselines.run --alg=ppo2 --env=PongNoFrameskip-v4 --num_timesteps=0 --load_path=~/models/pong_20M_ppo2 --play[m
+[31m-```[m
+[31m-[m
+[31m-*NOTE:* Mujoco environments require normalization to work properly, so we wrap them with VecNormalize wrapper. Currently, to ensure the models are saved with normalization (so that trained models can be restored and run without further training) the normalization coefficients are saved as tensorflow variables. This can decrease the performance somewhat, so if you require high-throughput steps with Mujoco and do not need saving/restoring the models, it may make sense to use numpy normalization instead. To do that, set 'use_tf=False` in [baselines/run.py](baselines/run.py#L116). [m
+[31m-[m
+[31m-### Logging and vizualizing learning curves and other training metrics[m
+[31m-By default, all summary data, including progress, standard output, is saved to a unique directory in a temp folder, specified by a call to Python's [tempfile.gettempdir()](https://docs.python.org/3/library/tempfile.html#tempfile.gettempdir).[m
+[31m-The directory can be changed with the `--log_path` command-line option.[m
+[31m-```bash[m
+[31m-python -m baselines.run --alg=ppo2 --env=PongNoFrameskip-v4 --num_timesteps=2e7 --save_path=~/models/pong_20M_ppo2 --log_path=~/logs/Pong/[m
+[31m-```[m
+[31m-*NOTE:* Please be aware that the logger will overwrite files of the same name in an existing directory, thus it's recommended that folder names be given a unique timestamp to prevent overwritten logs.[m
+[31m-[m
+[31m-Another way the temp directory can be changed is through the use of the `$OPENAI_LOGDIR` environment variable.[m
+[31m-[m
+[31m-For examples on how to load and display the training data, see [here](docs/viz/viz.ipynb).[m
+[31m-[m
+[31m-## Subpackages[m
+[31m-[m
+[31m-- [A2C](baselines/a2c)[m
+[31m-- [ACER](baselines/acer)[m
+[31m-- [ACKTR](baselines/acktr)[m
+[31m-- [DDPG](baselines/ddpg)[m
+[31m-- [DQN](baselines/deepq)[m
+[31m-- [GAIL](baselines/gail)[m
+[31m-- [HER](baselines/her)[m
+[31m-- [PPO1](baselines/ppo1) (obsolete version, left here temporarily)[m
+[31m-- [PPO2](baselines/ppo2) [m
+[31m-- [TRPO](baselines/trpo_mpi)[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-## Benchmarks[m
+[31m-Results of benchmarks on Mujoco (1M timesteps) and Atari (10M timesteps) are available [m
+[31m-[here for Mujoco](https://htmlpreview.github.com/?https://github.com/openai/baselines/blob/master/benchmarks_mujoco1M.htm) [m
+[31m-and[m
+[31m-[here for Atari](https://htmlpreview.github.com/?https://github.com/openai/baselines/blob/master/benchmarks_atari10M.htm) [m
+[31m-respectively. Note that these results may be not on the latest version of the code, particular commit hash with which results were obtained is specified on the benchmarks page. [m
+[31m-[m
+[31m-To cite this repository in publications:[m
+[31m-[m
+[31m-    @misc{baselines,[m
+[31m-      author = {Dhariwal, Prafulla and Hesse, Christopher and Klimov, Oleg and Nichol, Alex and Plappert, Matthias and Radford, Alec and Schulman, John and Sidor, Szymon and Wu, Yuhuai and Zhokhov, Peter},[m
+[31m-      title = {OpenAI Baselines},[m
+[31m-      year = {2017},[m
+[31m-      publisher = {GitHub},[m
+[31m-      journal = {GitHub repository},[m
+[31m-      howpublished = {\url{https://github.com/openai/baselines}},[m
+[31m-    }[m
+ [m
+[1mdiff --git a/baselines/__pycache__/__init__.cpython-37.pyc b/baselines/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..bdd6fc2[m
+Binary files /dev/null and b/baselines/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/__pycache__/logger.cpython-37.pyc b/baselines/__pycache__/logger.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..7f3b483[m
+Binary files /dev/null and b/baselines/__pycache__/logger.cpython-37.pyc differ
+[1mdiff --git a/baselines/__pycache__/results_plotter.cpython-37.pyc b/baselines/__pycache__/results_plotter.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..fe387ec[m
+Binary files /dev/null and b/baselines/__pycache__/results_plotter.cpython-37.pyc differ
+[1mdiff --git a/baselines/__pycache__/run.cpython-37.pyc b/baselines/__pycache__/run.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..d637d02[m
+Binary files /dev/null and b/baselines/__pycache__/run.cpython-37.pyc differ
+[1mdiff --git a/baselines/a2c/README.md b/baselines/a2c/README.md[m
+[1mdeleted file mode 100644[m
+[1mindex 9450054..0000000[m
+[1m--- a/baselines/a2c/README.md[m
+[1m+++ /dev/null[m
+[36m@@ -1,13 +0,0 @@[m
+[31m-# A2C[m
+[31m-[m
+[31m-- Original paper: https://arxiv.org/abs/1602.01783[m
+[31m-- Baselines blog post: https://blog.openai.com/baselines-acktr-a2c/[m
+[31m-- `python -m baselines.run --alg=a2c --env=PongNoFrameskip-v4` runs the algorithm for 40M frames = 10M timesteps on an Atari Pong. See help (`-h`) for more options[m
+[31m-- also refer to the repo-wide [README.md](../../README.md#training-models)[m
+[31m-[m
+[31m-## Files[m
+[31m-- `run_atari`: file used to run the algorithm.[m
+[31m-- `policies.py`: contains the different versions of the A2C architecture (MlpPolicy, CNNPolicy, LstmPolicy...).[m
+[31m-- `a2c.py`: - Model : class used to initialize the step_model (sampling) and train_model (training)[m
+[31m-	- learn : Main entrypoint for A2C algorithm. Train a policy with given network architecture on a given environment using a2c algorithm.[m
+[31m-- `runner.py`: class used to generates a batch of experiences[m
+[1mdiff --git a/baselines/a2c/__pycache__/__init__.cpython-37.pyc b/baselines/a2c/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..bc700e3[m
+Binary files /dev/null and b/baselines/a2c/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/a2c/__pycache__/a2c.cpython-37.pyc b/baselines/a2c/__pycache__/a2c.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..37ddade[m
+Binary files /dev/null and b/baselines/a2c/__pycache__/a2c.cpython-37.pyc differ
+[1mdiff --git a/baselines/a2c/__pycache__/runner.cpython-37.pyc b/baselines/a2c/__pycache__/runner.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..4b6de5f[m
+Binary files /dev/null and b/baselines/a2c/__pycache__/runner.cpython-37.pyc differ
+[1mdiff --git a/baselines/a2c/__pycache__/utils.cpython-37.pyc b/baselines/a2c/__pycache__/utils.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a26a97b[m
+Binary files /dev/null and b/baselines/a2c/__pycache__/utils.cpython-37.pyc differ
+[1mdiff --git a/baselines/acer/README.md b/baselines/acer/README.md[m
+[1mdeleted file mode 100644[m
+[1mindex d1ef98c..0000000[m
+[1m--- a/baselines/acer/README.md[m
+[1m+++ /dev/null[m
+[36m@@ -1,6 +0,0 @@[m
+[31m-# ACER[m
+[31m-[m
+[31m-- Original paper: https://arxiv.org/abs/1611.01224[m
+[31m-- `python -m baselines.run --alg=acer --env=PongNoFrameskip-v4` runs the algorithm for 40M frames = 10M timesteps on an Atari Pong. See help (`-h`) for more options.[m
+[31m-- also refer to the repo-wide [README.md](../../README.md#training-models)[m
+[31m-[m
+[1mdiff --git a/baselines/acer/__pycache__/__init__.cpython-37.pyc b/baselines/acer/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..4b193ce[m
+Binary files /dev/null and b/baselines/acer/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/acer/__pycache__/acer.cpython-37.pyc b/baselines/acer/__pycache__/acer.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a1aadfc[m
+Binary files /dev/null and b/baselines/acer/__pycache__/acer.cpython-37.pyc differ
+[1mdiff --git a/baselines/acer/__pycache__/buffer.cpython-37.pyc b/baselines/acer/__pycache__/buffer.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a6b00b1[m
+Binary files /dev/null and b/baselines/acer/__pycache__/buffer.cpython-37.pyc differ
+[1mdiff --git a/baselines/acer/__pycache__/defaults.cpython-37.pyc b/baselines/acer/__pycache__/defaults.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..37f3ed8[m
+Binary files /dev/null and b/baselines/acer/__pycache__/defaults.cpython-37.pyc differ
+[1mdiff --git a/baselines/acer/__pycache__/policies.cpython-37.pyc b/baselines/acer/__pycache__/policies.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..9fad900[m
+Binary files /dev/null and b/baselines/acer/__pycache__/policies.cpython-37.pyc differ
+[1mdiff --git a/baselines/acer/__pycache__/runner.cpython-37.pyc b/baselines/acer/__pycache__/runner.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..feec5ac[m
+Binary files /dev/null and b/baselines/acer/__pycache__/runner.cpython-37.pyc differ
+[1mdiff --git a/baselines/acktr/README.md b/baselines/acktr/README.md[m
+[1mdeleted file mode 100644[m
+[1mindex 99f50f2..0000000[m
+[1m--- a/baselines/acktr/README.md[m
+[1m+++ /dev/null[m
+[36m@@ -1,9 +0,0 @@[m
+[31m-# ACKTR[m
+[31m-[m
+[31m-- Original paper: https://arxiv.org/abs/1708.05144[m
+[31m-- Baselines blog post: https://blog.openai.com/baselines-acktr-a2c/[m
+[31m-- `python -m baselines.run --alg=acktr --env=PongNoFrameskip-v4` runs the algorithm for 40M frames = 10M timesteps on an Atari Pong. See help (`-h`) for more options.[m
+[31m-- also refer to the repo-wide [README.md](../../README.md#training-models)[m
+[31m-[m
+[31m-## ACKTR with continuous action spaces[m
+[31m-The code of ACKTR has been refactored to handle both discrete and continuous action spaces uniformly. In the original version, discrete and continuous action spaces were handled by different code (actkr_disc.py and acktr_cont.py) with little overlap. If interested in the original version of the acktr for continuous action spaces, use `old_acktr_cont` branch. Note that original code performs better on the mujoco tasks than the refactored version; we are still investigating why. [m
+[1mdiff --git a/baselines/acktr/__pycache__/__init__.cpython-37.pyc b/baselines/acktr/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..82e182f[m
+Binary files /dev/null and b/baselines/acktr/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/acktr/__pycache__/acktr.cpython-37.pyc b/baselines/acktr/__pycache__/acktr.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..1b19137[m
+Binary files /dev/null and b/baselines/acktr/__pycache__/acktr.cpython-37.pyc differ
+[1mdiff --git a/baselines/acktr/__pycache__/defaults.cpython-37.pyc b/baselines/acktr/__pycache__/defaults.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..45ff3a5[m
+Binary files /dev/null and b/baselines/acktr/__pycache__/defaults.cpython-37.pyc differ
+[1mdiff --git a/baselines/acktr/__pycache__/kfac.cpython-37.pyc b/baselines/acktr/__pycache__/kfac.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..569ede4[m
+Binary files /dev/null and b/baselines/acktr/__pycache__/kfac.cpython-37.pyc differ
+[1mdiff --git a/baselines/acktr/__pycache__/kfac_utils.cpython-37.pyc b/baselines/acktr/__pycache__/kfac_utils.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..692985a[m
+Binary files /dev/null and b/baselines/acktr/__pycache__/kfac_utils.cpython-37.pyc differ
+[1mdiff --git a/baselines/acktr/__pycache__/utils.cpython-37.pyc b/baselines/acktr/__pycache__/utils.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..7726567[m
+Binary files /dev/null and b/baselines/acktr/__pycache__/utils.cpython-37.pyc differ
+[1mdiff --git a/baselines/bench/__pycache__/__init__.cpython-37.pyc b/baselines/bench/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a2d3012[m
+Binary files /dev/null and b/baselines/bench/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/bench/__pycache__/benchmarks.cpython-37.pyc b/baselines/bench/__pycache__/benchmarks.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8e1fbea[m
+Binary files /dev/null and b/baselines/bench/__pycache__/benchmarks.cpython-37.pyc differ
+[1mdiff --git a/baselines/bench/__pycache__/monitor.cpython-37.pyc b/baselines/bench/__pycache__/monitor.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..c820fca[m
+Binary files /dev/null and b/baselines/bench/__pycache__/monitor.cpython-37.pyc differ
+[1mdiff --git a/baselines/bench/__pycache__/test_monitor.cpython-37.pyc b/baselines/bench/__pycache__/test_monitor.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8ead8a5[m
+Binary files /dev/null and b/baselines/bench/__pycache__/test_monitor.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/__init__.cpython-37.pyc b/baselines/common/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..f9ee983[m
+Binary files /dev/null and b/baselines/common/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/atari_wrappers.cpython-37.pyc b/baselines/common/__pycache__/atari_wrappers.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..15adb4a[m
+Binary files /dev/null and b/baselines/common/__pycache__/atari_wrappers.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/cg.cpython-37.pyc b/baselines/common/__pycache__/cg.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..de4f3c4[m
+Binary files /dev/null and b/baselines/common/__pycache__/cg.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/cmd_util.cpython-37.pyc b/baselines/common/__pycache__/cmd_util.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b0550d6[m
+Binary files /dev/null and b/baselines/common/__pycache__/cmd_util.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/console_util.cpython-37.pyc b/baselines/common/__pycache__/console_util.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..61728cc[m
+Binary files /dev/null and b/baselines/common/__pycache__/console_util.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/dataset.cpython-37.pyc b/baselines/common/__pycache__/dataset.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..f03070a[m
+Binary files /dev/null and b/baselines/common/__pycache__/dataset.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/distributions.cpython-37.pyc b/baselines/common/__pycache__/distributions.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..9062be8[m
+Binary files /dev/null and b/baselines/common/__pycache__/distributions.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/input.cpython-37.pyc b/baselines/common/__pycache__/input.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..26de7c8[m
+Binary files /dev/null and b/baselines/common/__pycache__/input.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/math_util.cpython-37.pyc b/baselines/common/__pycache__/math_util.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..7641d34[m
+Binary files /dev/null and b/baselines/common/__pycache__/math_util.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/misc_util.cpython-37.pyc b/baselines/common/__pycache__/misc_util.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..c933d58[m
+Binary files /dev/null and b/baselines/common/__pycache__/misc_util.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/models.cpython-37.pyc b/baselines/common/__pycache__/models.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..6850ab5[m
+Binary files /dev/null and b/baselines/common/__pycache__/models.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/mpi_adam.cpython-37.pyc b/baselines/common/__pycache__/mpi_adam.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e05d11d[m
+Binary files /dev/null and b/baselines/common/__pycache__/mpi_adam.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/mpi_adam_optimizer.cpython-37.pyc b/baselines/common/__pycache__/mpi_adam_optimizer.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..4e59f20[m
+Binary files /dev/null and b/baselines/common/__pycache__/mpi_adam_optimizer.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/mpi_fork.cpython-37.pyc b/baselines/common/__pycache__/mpi_fork.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8c4564f[m
+Binary files /dev/null and b/baselines/common/__pycache__/mpi_fork.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/mpi_moments.cpython-37.pyc b/baselines/common/__pycache__/mpi_moments.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..eede6e2[m
+Binary files /dev/null and b/baselines/common/__pycache__/mpi_moments.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/mpi_running_mean_std.cpython-37.pyc b/baselines/common/__pycache__/mpi_running_mean_std.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..4abcc1c[m
+Binary files /dev/null and b/baselines/common/__pycache__/mpi_running_mean_std.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/mpi_util.cpython-37.pyc b/baselines/common/__pycache__/mpi_util.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..4bbc423[m
+Binary files /dev/null and b/baselines/common/__pycache__/mpi_util.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/plot_util.cpython-37.pyc b/baselines/common/__pycache__/plot_util.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..7576fa8[m
+Binary files /dev/null and b/baselines/common/__pycache__/plot_util.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/policies.cpython-37.pyc b/baselines/common/__pycache__/policies.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..0e315fb[m
+Binary files /dev/null and b/baselines/common/__pycache__/policies.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/retro_wrappers.cpython-37.pyc b/baselines/common/__pycache__/retro_wrappers.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..bd89f42[m
+Binary files /dev/null and b/baselines/common/__pycache__/retro_wrappers.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/runners.cpython-37.pyc b/baselines/common/__pycache__/runners.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..702818f[m
+Binary files /dev/null and b/baselines/common/__pycache__/runners.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/running_mean_std.cpython-37.pyc b/baselines/common/__pycache__/running_mean_std.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..2d3b8e9[m
+Binary files /dev/null and b/baselines/common/__pycache__/running_mean_std.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/schedules.cpython-37.pyc b/baselines/common/__pycache__/schedules.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..d03b681[m
+Binary files /dev/null and b/baselines/common/__pycache__/schedules.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/segment_tree.cpython-37.pyc b/baselines/common/__pycache__/segment_tree.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..9253bf5[m
+Binary files /dev/null and b/baselines/common/__pycache__/segment_tree.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/test_mpi_util.cpython-37.pyc b/baselines/common/__pycache__/test_mpi_util.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8618637[m
+Binary files /dev/null and b/baselines/common/__pycache__/test_mpi_util.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/tf_util.cpython-37.pyc b/baselines/common/__pycache__/tf_util.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8e14553[m
+Binary files /dev/null and b/baselines/common/__pycache__/tf_util.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/tile_images.cpython-37.pyc b/baselines/common/__pycache__/tile_images.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..08e82c0[m
+Binary files /dev/null and b/baselines/common/__pycache__/tile_images.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/__pycache__/wrappers.cpython-37.pyc b/baselines/common/__pycache__/wrappers.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..54052f0[m
+Binary files /dev/null and b/baselines/common/__pycache__/wrappers.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/policies.py b/baselines/common/policies.py[m
+[1mindex 9c9bb8b..815e8fc 100644[m
+[1m--- a/baselines/common/policies.py[m
+[1m+++ b/baselines/common/policies.py[m
+[36m@@ -15,7 +15,7 @@[m [mclass PolicyWithValue(object):[m
+     Encapsulates fields and methods for RL policy and value function estimation with shared parameters[m
+     """[m
+ [m
+[31m-    def __init__(self, env, observations, latent, estimate_q=False, vf_latent=None, sess=None, **tensors):[m
+[32m+[m[32m    def __init__(self, env, observations, latent, estimate_q=False, vf_latent=None, sess=None, percent=.5, **tensors):[m
+         """[m
+         Parameters:[m
+         ----------[m
+[36m@@ -37,6 +37,7 @@[m [mclass PolicyWithValue(object):[m
+         self.state = tf.constant([])[m
+         self.initial_state = None[m
+         self.__dict__.update(tensors)[m
+[32m+[m[32m        self.__dict__.update({"percent":percent})[m
+ [m
+         vf_latent = vf_latent if vf_latent is not None else latent[m
+ [m
+[36m@@ -118,7 +119,7 @@[m [mclass PolicyWithValue(object):[m
+     def load(self, load_path):[m
+         tf_util.load_state(load_path, sess=self.sess)[m
+ [m
+[31m-def build_policy(env, policy_network, value_network=None,  normalize_observations=False, estimate_q=False, **policy_kwargs):[m
+[32m+[m[32mdef build_policy(env, policy_network, value_network=None,  normalize_observations=False, estimate_q=False, percent=.5, **policy_kwargs):[m
+     if isinstance(policy_network, str):[m
+         network_type = policy_network[m
+         policy_network = get_network_builder(network_type)(**policy_kwargs)[m
+[36m@@ -141,13 +142,15 @@[m [mdef build_policy(env, policy_network, value_network=None,  normalize_observation[m
+         with tf.variable_scope('pi', reuse=tf.AUTO_REUSE):[m
+             policy_latent = policy_network(encoded_x)[m
+             if isinstance(policy_latent, tuple):[m
+[31m-                policy_latent, recurrent_tensors = policy_latent[m
+[32m+[m[32m                policy_latent, recurrent_tensors, extra = policy_latent[m
+[32m+[m[32m                extra_tensors["extra"] = extra[m
+ [m
+                 if recurrent_tensors is not None:[m
+                     # recurrent architecture, need a few more steps[m
+                     nenv = nbatch // nsteps[m
+                     assert nenv > 0, 'Bad input for recurrent policy: batch size {} smaller than nsteps {}'.format(nbatch, nsteps)[m
+[31m-                    policy_latent, recurrent_tensors = policy_network(encoded_x, nenv)[m
+[32m+[m[32m                    policy_latent, recurrent_tensors, extra = policy_network(encoded_x, nenv)[m
+[32m+[m[32m                    extra_tensors["extra"] = extra[m
+                     extra_tensors.update(recurrent_tensors)[m
+ [m
+ [m
+[36m@@ -172,6 +175,7 @@[m [mdef build_policy(env, policy_network, value_network=None,  normalize_observation[m
+             vf_latent=vf_latent,[m
+             sess=sess,[m
+             estimate_q=estimate_q,[m
+[32m+[m[32m            percent=percent[m
+             **extra_tensors[m
+         )[m
+         return policy[m
+[1mdiff --git a/baselines/common/tests/__pycache__/__init__.cpython-37.pyc b/baselines/common/tests/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a4eb85d[m
+Binary files /dev/null and b/baselines/common/tests/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/__pycache__/test_cartpole.cpython-37.pyc b/baselines/common/tests/__pycache__/test_cartpole.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b68cf82[m
+Binary files /dev/null and b/baselines/common/tests/__pycache__/test_cartpole.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/__pycache__/test_doc_examples.cpython-37.pyc b/baselines/common/tests/__pycache__/test_doc_examples.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..bb5f8c3[m
+Binary files /dev/null and b/baselines/common/tests/__pycache__/test_doc_examples.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/__pycache__/test_env_after_learn.cpython-37.pyc b/baselines/common/tests/__pycache__/test_env_after_learn.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..f93d8a0[m
+Binary files /dev/null and b/baselines/common/tests/__pycache__/test_env_after_learn.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/__pycache__/test_fetchreach.cpython-37.pyc b/baselines/common/tests/__pycache__/test_fetchreach.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..69750a5[m
+Binary files /dev/null and b/baselines/common/tests/__pycache__/test_fetchreach.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/__pycache__/test_fixed_sequence.cpython-37.pyc b/baselines/common/tests/__pycache__/test_fixed_sequence.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..070fba0[m
+Binary files /dev/null and b/baselines/common/tests/__pycache__/test_fixed_sequence.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/__pycache__/test_identity.cpython-37.pyc b/baselines/common/tests/__pycache__/test_identity.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..d60558c[m
+Binary files /dev/null and b/baselines/common/tests/__pycache__/test_identity.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/__pycache__/test_mnist.cpython-37.pyc b/baselines/common/tests/__pycache__/test_mnist.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..38b7290[m
+Binary files /dev/null and b/baselines/common/tests/__pycache__/test_mnist.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/__pycache__/test_plot_util.cpython-37.pyc b/baselines/common/tests/__pycache__/test_plot_util.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..4db9b5d[m
+Binary files /dev/null and b/baselines/common/tests/__pycache__/test_plot_util.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/__pycache__/test_schedules.cpython-37.pyc b/baselines/common/tests/__pycache__/test_schedules.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..be7c7fc[m
+Binary files /dev/null and b/baselines/common/tests/__pycache__/test_schedules.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/__pycache__/test_segment_tree.cpython-37.pyc b/baselines/common/tests/__pycache__/test_segment_tree.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..ba3fa5f[m
+Binary files /dev/null and b/baselines/common/tests/__pycache__/test_segment_tree.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/__pycache__/test_serialization.cpython-37.pyc b/baselines/common/tests/__pycache__/test_serialization.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..eb6d15b[m
+Binary files /dev/null and b/baselines/common/tests/__pycache__/test_serialization.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/__pycache__/test_tf_util.cpython-37.pyc b/baselines/common/tests/__pycache__/test_tf_util.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..eed76da[m
+Binary files /dev/null and b/baselines/common/tests/__pycache__/test_tf_util.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/__pycache__/test_with_mpi.cpython-37.pyc b/baselines/common/tests/__pycache__/test_with_mpi.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a1231c8[m
+Binary files /dev/null and b/baselines/common/tests/__pycache__/test_with_mpi.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/__pycache__/util.cpython-37.pyc b/baselines/common/tests/__pycache__/util.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..f6e86b7[m
+Binary files /dev/null and b/baselines/common/tests/__pycache__/util.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/envs/__pycache__/__init__.cpython-37.pyc b/baselines/common/tests/envs/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..3cf0742[m
+Binary files /dev/null and b/baselines/common/tests/envs/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/envs/__pycache__/fixed_sequence_env.cpython-37.pyc b/baselines/common/tests/envs/__pycache__/fixed_sequence_env.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b5fec13[m
+Binary files /dev/null and b/baselines/common/tests/envs/__pycache__/fixed_sequence_env.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/envs/__pycache__/identity_env.cpython-37.pyc b/baselines/common/tests/envs/__pycache__/identity_env.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..df50411[m
+Binary files /dev/null and b/baselines/common/tests/envs/__pycache__/identity_env.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/envs/__pycache__/identity_env_test.cpython-37.pyc b/baselines/common/tests/envs/__pycache__/identity_env_test.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..30b2735[m
+Binary files /dev/null and b/baselines/common/tests/envs/__pycache__/identity_env_test.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/tests/envs/__pycache__/mnist_env.cpython-37.pyc b/baselines/common/tests/envs/__pycache__/mnist_env.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..1a0c253[m
+Binary files /dev/null and b/baselines/common/tests/envs/__pycache__/mnist_env.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/vec_env/__pycache__/__init__.cpython-37.pyc b/baselines/common/vec_env/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..c708d1c[m
+Binary files /dev/null and b/baselines/common/vec_env/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/vec_env/__pycache__/dummy_vec_env.cpython-37.pyc b/baselines/common/vec_env/__pycache__/dummy_vec_env.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..06adb6c[m
+Binary files /dev/null and b/baselines/common/vec_env/__pycache__/dummy_vec_env.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/vec_env/__pycache__/shmem_vec_env.cpython-37.pyc b/baselines/common/vec_env/__pycache__/shmem_vec_env.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..42c2c97[m
+Binary files /dev/null and b/baselines/common/vec_env/__pycache__/shmem_vec_env.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/vec_env/__pycache__/subproc_vec_env.cpython-37.pyc b/baselines/common/vec_env/__pycache__/subproc_vec_env.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b34a7b2[m
+Binary files /dev/null and b/baselines/common/vec_env/__pycache__/subproc_vec_env.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/vec_env/__pycache__/test_vec_env.cpython-37.pyc b/baselines/common/vec_env/__pycache__/test_vec_env.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..3f6a949[m
+Binary files /dev/null and b/baselines/common/vec_env/__pycache__/test_vec_env.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/vec_env/__pycache__/test_video_recorder.cpython-37.pyc b/baselines/common/vec_env/__pycache__/test_video_recorder.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a1b68cf[m
+Binary files /dev/null and b/baselines/common/vec_env/__pycache__/test_video_recorder.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/vec_env/__pycache__/util.cpython-37.pyc b/baselines/common/vec_env/__pycache__/util.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..fa63fcd[m
+Binary files /dev/null and b/baselines/common/vec_env/__pycache__/util.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/vec_env/__pycache__/vec_env.cpython-37.pyc b/baselines/common/vec_env/__pycache__/vec_env.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..bef34d2[m
+Binary files /dev/null and b/baselines/common/vec_env/__pycache__/vec_env.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/vec_env/__pycache__/vec_frame_stack.cpython-37.pyc b/baselines/common/vec_env/__pycache__/vec_frame_stack.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..388c5d1[m
+Binary files /dev/null and b/baselines/common/vec_env/__pycache__/vec_frame_stack.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/vec_env/__pycache__/vec_monitor.cpython-37.pyc b/baselines/common/vec_env/__pycache__/vec_monitor.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..31bf61e[m
+Binary files /dev/null and b/baselines/common/vec_env/__pycache__/vec_monitor.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/vec_env/__pycache__/vec_normalize.cpython-37.pyc b/baselines/common/vec_env/__pycache__/vec_normalize.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..63d18a0[m
+Binary files /dev/null and b/baselines/common/vec_env/__pycache__/vec_normalize.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/vec_env/__pycache__/vec_remove_dict_obs.cpython-37.pyc b/baselines/common/vec_env/__pycache__/vec_remove_dict_obs.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..268f11a[m
+Binary files /dev/null and b/baselines/common/vec_env/__pycache__/vec_remove_dict_obs.cpython-37.pyc differ
+[1mdiff --git a/baselines/common/vec_env/__pycache__/vec_video_recorder.cpython-37.pyc b/baselines/common/vec_env/__pycache__/vec_video_recorder.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..964684f[m
+Binary files /dev/null and b/baselines/common/vec_env/__pycache__/vec_video_recorder.cpython-37.pyc differ
+[1mdiff --git a/baselines/ddpg/README.md b/baselines/ddpg/README.md[m
+[1mdeleted file mode 100755[m
+[1mindex ed6d23f..0000000[m
+[1m--- a/baselines/ddpg/README.md[m
+[1m+++ /dev/null[m
+[36m@@ -1,5 +0,0 @@[m
+[31m-# DDPG[m
+[31m-[m
+[31m-- Original paper: https://arxiv.org/abs/1509.02971[m
+[31m-- Baselines post: https://blog.openai.com/better-exploration-with-parameter-noise/[m
+[31m-- `python -m baselines.run --alg=ddpg --env=HalfCheetah-v2 --num_timesteps=1e6` runs the algorithm for 1M frames = 10M timesteps on a Mujoco environment. See help (`-h`) for more options.[m
+[1mdiff --git a/baselines/ddpg/__init__.py b/baselines/ddpg/__init__.py[m
+[1mold mode 100755[m
+[1mnew mode 100644[m
+[1mdiff --git a/baselines/ddpg/__pycache__/__init__.cpython-37.pyc b/baselines/ddpg/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..0eacdb0[m
+Binary files /dev/null and b/baselines/ddpg/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/ddpg/__pycache__/ddpg.cpython-37.pyc b/baselines/ddpg/__pycache__/ddpg.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..62476e1[m
+Binary files /dev/null and b/baselines/ddpg/__pycache__/ddpg.cpython-37.pyc differ
+[1mdiff --git a/baselines/ddpg/__pycache__/ddpg_learner.cpython-37.pyc b/baselines/ddpg/__pycache__/ddpg_learner.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8780915[m
+Binary files /dev/null and b/baselines/ddpg/__pycache__/ddpg_learner.cpython-37.pyc differ
+[1mdiff --git a/baselines/ddpg/__pycache__/memory.cpython-37.pyc b/baselines/ddpg/__pycache__/memory.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..2494ef9[m
+Binary files /dev/null and b/baselines/ddpg/__pycache__/memory.cpython-37.pyc differ
+[1mdiff --git a/baselines/ddpg/__pycache__/models.cpython-37.pyc b/baselines/ddpg/__pycache__/models.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..ffab192[m
+Binary files /dev/null and b/baselines/ddpg/__pycache__/models.cpython-37.pyc differ
+[1mdiff --git a/baselines/ddpg/__pycache__/noise.cpython-37.pyc b/baselines/ddpg/__pycache__/noise.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8ce092a[m
+Binary files /dev/null and b/baselines/ddpg/__pycache__/noise.cpython-37.pyc differ
+[1mdiff --git a/baselines/ddpg/__pycache__/test_smoke.cpython-37.pyc b/baselines/ddpg/__pycache__/test_smoke.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..88af997[m
+Binary files /dev/null and b/baselines/ddpg/__pycache__/test_smoke.cpython-37.pyc differ
+[1mdiff --git a/baselines/ddpg/ddpg.py b/baselines/ddpg/ddpg.py[m
+[1mold mode 100755[m
+[1mnew mode 100644[m
+[1mdiff --git a/baselines/ddpg/ddpg_learner.py b/baselines/ddpg/ddpg_learner.py[m
+[1mold mode 100755[m
+[1mnew mode 100644[m
+[1mdiff --git a/baselines/ddpg/memory.py b/baselines/ddpg/memory.py[m
+[1mold mode 100755[m
+[1mnew mode 100644[m
+[1mdiff --git a/baselines/ddpg/models.py b/baselines/ddpg/models.py[m
+[1mold mode 100755[m
+[1mnew mode 100644[m
+[1mdiff --git a/baselines/ddpg/noise.py b/baselines/ddpg/noise.py[m
+[1mold mode 100755[m
+[1mnew mode 100644[m
+[1mdiff --git a/baselines/deepq/README.md b/baselines/deepq/README.md[m
+[1mdeleted file mode 100644[m
+[1mindex 51fcbef..0000000[m
+[1m--- a/baselines/deepq/README.md[m
+[1m+++ /dev/null[m
+[36m@@ -1,37 +0,0 @@[m
+[31m-## If you are curious.[m
+[31m-[m
+[31m-##### Train a Cartpole agent and watch it play once it converges![m
+[31m-[m
+[31m-Here's a list of commands to run to quickly get a working example:[m
+[31m-[m
+[31m-<img src="../../data/cartpole.gif" width="25%" />[m
+[31m-[m
+[31m-[m
+[31m-```bash[m
+[31m-# Train model and save the results to cartpole_model.pkl[m
+[31m-python -m baselines.run --alg=deepq --env=CartPole-v0 --save_path=./cartpole_model.pkl --num_timesteps=1e5[m
+[31m-# Load the model saved in cartpole_model.pkl and visualize the learned policy[m
+[31m-python -m baselines.run --alg=deepq --env=CartPole-v0 --load_path=./cartpole_model.pkl --num_timesteps=0 --play[m
+[31m-```[m
+[31m-[m
+[31m-## If you wish to apply DQN to solve a problem.[m
+[31m-[m
+[31m-Check out our simple agent trained with one stop shop `deepq.learn` function. [m
+[31m-[m
+[31m-- [baselines/deepq/experiments/train_cartpole.py](experiments/train_cartpole.py) - train a Cartpole agent.[m
+[31m-[m
+[31m-In particular notice that once `deepq.learn` finishes training it returns `act` function which can be used to select actions in the environment. Once trained you can easily save it and load at later time. Complimentary file `enjoy_cartpole.py` loads and visualizes the learned policy.[m
+[31m-[m
+[31m-## If you wish to experiment with the algorithm[m
+[31m-[m
+[31m-##### Check out the examples[m
+[31m-[m
+[31m-- [baselines/deepq/experiments/custom_cartpole.py](experiments/custom_cartpole.py) - Cartpole training with more fine grained control over the internals of DQN algorithm.[m
+[31m-- [baselines/deepq/defaults.py](defaults.py) - settings for training on atari. Run [m
+[31m-[m
+[31m-```bash[m
+[31m-python -m baselines.run --alg=deepq --env=PongNoFrameskip-v4 [m
+[31m-```[m
+[31m-to train on Atari Pong (see more in repo-wide [README.md](../../README.md#training-models))[m
+[31m-[m
+[31m-[m
+[1mdiff --git a/baselines/deepq/__pycache__/__init__.cpython-37.pyc b/baselines/deepq/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..7014785[m
+Binary files /dev/null and b/baselines/deepq/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/deepq/__pycache__/build_graph.cpython-37.pyc b/baselines/deepq/__pycache__/build_graph.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..12c0a25[m
+Binary files /dev/null and b/baselines/deepq/__pycache__/build_graph.cpython-37.pyc differ
+[1mdiff --git a/baselines/deepq/__pycache__/deepq.cpython-37.pyc b/baselines/deepq/__pycache__/deepq.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..81f51a6[m
+Binary files /dev/null and b/baselines/deepq/__pycache__/deepq.cpython-37.pyc differ
+[1mdiff --git a/baselines/deepq/__pycache__/defaults.cpython-37.pyc b/baselines/deepq/__pycache__/defaults.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..c51fde1[m
+Binary files /dev/null and b/baselines/deepq/__pycache__/defaults.cpython-37.pyc differ
+[1mdiff --git a/baselines/deepq/__pycache__/models.cpython-37.pyc b/baselines/deepq/__pycache__/models.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..6ee392c[m
+Binary files /dev/null and b/baselines/deepq/__pycache__/models.cpython-37.pyc differ
+[1mdiff --git a/baselines/deepq/__pycache__/replay_buffer.cpython-37.pyc b/baselines/deepq/__pycache__/replay_buffer.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8207a5b[m
+Binary files /dev/null and b/baselines/deepq/__pycache__/replay_buffer.cpython-37.pyc differ
+[1mdiff --git a/baselines/deepq/__pycache__/utils.cpython-37.pyc b/baselines/deepq/__pycache__/utils.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b32c62d[m
+Binary files /dev/null and b/baselines/deepq/__pycache__/utils.cpython-37.pyc differ
+[1mdiff --git a/baselines/deepq/experiments/__pycache__/__init__.cpython-37.pyc b/baselines/deepq/experiments/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..d1ed5f3[m
+Binary files /dev/null and b/baselines/deepq/experiments/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/deepq/experiments/__pycache__/custom_cartpole.cpython-37.pyc b/baselines/deepq/experiments/__pycache__/custom_cartpole.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..7423200[m
+Binary files /dev/null and b/baselines/deepq/experiments/__pycache__/custom_cartpole.cpython-37.pyc differ
+[1mdiff --git a/baselines/deepq/experiments/__pycache__/enjoy_cartpole.cpython-37.pyc b/baselines/deepq/experiments/__pycache__/enjoy_cartpole.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..50e08e3[m
+Binary files /dev/null and b/baselines/deepq/experiments/__pycache__/enjoy_cartpole.cpython-37.pyc differ
+[1mdiff --git a/baselines/deepq/experiments/__pycache__/enjoy_mountaincar.cpython-37.pyc b/baselines/deepq/experiments/__pycache__/enjoy_mountaincar.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..9982e69[m
+Binary files /dev/null and b/baselines/deepq/experiments/__pycache__/enjoy_mountaincar.cpython-37.pyc differ
+[1mdiff --git a/baselines/deepq/experiments/__pycache__/enjoy_pong.cpython-37.pyc b/baselines/deepq/experiments/__pycache__/enjoy_pong.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..5823b76[m
+Binary files /dev/null and b/baselines/deepq/experiments/__pycache__/enjoy_pong.cpython-37.pyc differ
+[1mdiff --git a/baselines/deepq/experiments/__pycache__/train_cartpole.cpython-37.pyc b/baselines/deepq/experiments/__pycache__/train_cartpole.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a6ce22d[m
+Binary files /dev/null and b/baselines/deepq/experiments/__pycache__/train_cartpole.cpython-37.pyc differ
+[1mdiff --git a/baselines/deepq/experiments/__pycache__/train_mountaincar.cpython-37.pyc b/baselines/deepq/experiments/__pycache__/train_mountaincar.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..3216782[m
+Binary files /dev/null and b/baselines/deepq/experiments/__pycache__/train_mountaincar.cpython-37.pyc differ
+[1mdiff --git a/baselines/deepq/experiments/__pycache__/train_pong.cpython-37.pyc b/baselines/deepq/experiments/__pycache__/train_pong.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..60dd615[m
+Binary files /dev/null and b/baselines/deepq/experiments/__pycache__/train_pong.cpython-37.pyc differ
+[1mdiff --git a/baselines/gail/README.md b/baselines/gail/README.md[m
+[1mdeleted file mode 100644[m
+[1mindex 1c1c1bb..0000000[m
+[1m--- a/baselines/gail/README.md[m
+[1m+++ /dev/null[m
+[36m@@ -1,52 +0,0 @@[m
+[31m-# Generative Adversarial Imitation Learning (GAIL)[m
+[31m-[m
+[31m-- Original paper: https://arxiv.org/abs/1606.03476[m
+[31m-[m
+[31m-For results benchmarking on MuJoCo, please navigate to [here](result/gail-result.md)[m
+[31m-[m
+[31m-## If you want to train an imitation learning agent[m
+[31m-[m
+[31m-### Step 1: Download expert data[m
+[31m-[m
+[31m-Download the expert data into `./data`, [download link](https://drive.google.com/drive/folders/1h3H4AY_ZBx08hz-Ct0Nxxus-V1melu1U?usp=sharing)[m
+[31m-[m
+[31m-### Step 2: Run GAIL[m
+[31m-[m
+[31m-Run with single rank:[m
+[31m-[m
+[31m-```bash[m
+[31m-python -m baselines.gail.run_mujoco[m
+[31m-```[m
+[31m-[m
+[31m-Run with multiple ranks:[m
+[31m-[m
+[31m-```bash[m
+[31m-mpirun -np 16 python -m baselines.gail.run_mujoco[m
+[31m-```[m
+[31m-[m
+[31m-See help (`-h`) for more options.[m
+[31m-[m
+[31m-#### In case you want to run Behavior Cloning (BC)[m
+[31m-[m
+[31m-```bash[m
+[31m-python -m baselines.gail.behavior_clone[m
+[31m-```[m
+[31m-[m
+[31m-See help (`-h`) for more options.[m
+[31m-[m
+[31m-[m
+[31m-## Contributing[m
+[31m-[m
+[31m-Bug reports and pull requests are welcome on GitHub at https://github.com/openai/baselines/pulls.[m
+[31m-[m
+[31m-## Maintainers[m
+[31m-[m
+[31m-- Yuan-Hong Liao, andrewliao11_at_gmail_dot_com[m
+[31m-- Ryan Julian, ryanjulian_at_gmail_dot_com[m
+[31m-[m
+[31m-## Others[m
+[31m-[m
+[31m-Thanks to the open source:[m
+[31m-[m
+[31m-- @openai/imitation[m
+[31m-- @carpedm20/deep-rl-tensorflow[m
+[1mdiff --git a/baselines/gail/__pycache__/__init__.cpython-37.pyc b/baselines/gail/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..551336e[m
+Binary files /dev/null and b/baselines/gail/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/gail/__pycache__/adversary.cpython-37.pyc b/baselines/gail/__pycache__/adversary.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..bfe5b1e[m
+Binary files /dev/null and b/baselines/gail/__pycache__/adversary.cpython-37.pyc differ
+[1mdiff --git a/baselines/gail/__pycache__/behavior_clone.cpython-37.pyc b/baselines/gail/__pycache__/behavior_clone.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..f91f0d8[m
+Binary files /dev/null and b/baselines/gail/__pycache__/behavior_clone.cpython-37.pyc differ
+[1mdiff --git a/baselines/gail/__pycache__/gail-eval.cpython-37.pyc b/baselines/gail/__pycache__/gail-eval.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..d02fbbe[m
+Binary files /dev/null and b/baselines/gail/__pycache__/gail-eval.cpython-37.pyc differ
+[1mdiff --git a/baselines/gail/__pycache__/mlp_policy.cpython-37.pyc b/baselines/gail/__pycache__/mlp_policy.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..eebb863[m
+Binary files /dev/null and b/baselines/gail/__pycache__/mlp_policy.cpython-37.pyc differ
+[1mdiff --git a/baselines/gail/__pycache__/run_mujoco.cpython-37.pyc b/baselines/gail/__pycache__/run_mujoco.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..6ae5fba[m
+Binary files /dev/null and b/baselines/gail/__pycache__/run_mujoco.cpython-37.pyc differ
+[1mdiff --git a/baselines/gail/__pycache__/statistics.cpython-37.pyc b/baselines/gail/__pycache__/statistics.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..715b687[m
+Binary files /dev/null and b/baselines/gail/__pycache__/statistics.cpython-37.pyc differ
+[1mdiff --git a/baselines/gail/__pycache__/trpo_mpi.cpython-37.pyc b/baselines/gail/__pycache__/trpo_mpi.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e040b5c[m
+Binary files /dev/null and b/baselines/gail/__pycache__/trpo_mpi.cpython-37.pyc differ
+[1mdiff --git a/baselines/gail/dataset/__pycache__/__init__.cpython-37.pyc b/baselines/gail/dataset/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e184fcd[m
+Binary files /dev/null and b/baselines/gail/dataset/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/gail/dataset/__pycache__/mujoco_dset.cpython-37.pyc b/baselines/gail/dataset/__pycache__/mujoco_dset.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..3ada885[m
+Binary files /dev/null and b/baselines/gail/dataset/__pycache__/mujoco_dset.cpython-37.pyc differ
+[1mdiff --git a/baselines/gail/result/HalfCheetah-normalized-deterministic-scores.png b/baselines/gail/result/HalfCheetah-normalized-deterministic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex ce4282f..0000000[m
+Binary files a/baselines/gail/result/HalfCheetah-normalized-deterministic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/HalfCheetah-normalized-stochastic-scores.png b/baselines/gail/result/HalfCheetah-normalized-stochastic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex 1b50e85..0000000[m
+Binary files a/baselines/gail/result/HalfCheetah-normalized-stochastic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/HalfCheetah-unnormalized-deterministic-scores.png b/baselines/gail/result/HalfCheetah-unnormalized-deterministic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex 0d45a94..0000000[m
+Binary files a/baselines/gail/result/HalfCheetah-unnormalized-deterministic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/HalfCheetah-unnormalized-stochastic-scores.png b/baselines/gail/result/HalfCheetah-unnormalized-stochastic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex 4b4ecb8..0000000[m
+Binary files a/baselines/gail/result/HalfCheetah-unnormalized-stochastic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/Hopper-normalized-deterministic-scores.png b/baselines/gail/result/Hopper-normalized-deterministic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex 83d5ce5..0000000[m
+Binary files a/baselines/gail/result/Hopper-normalized-deterministic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/Hopper-normalized-stochastic-scores.png b/baselines/gail/result/Hopper-normalized-stochastic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex 53e4604..0000000[m
+Binary files a/baselines/gail/result/Hopper-normalized-stochastic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/Hopper-unnormalized-deterministic-scores.png b/baselines/gail/result/Hopper-unnormalized-deterministic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex 11a16f6..0000000[m
+Binary files a/baselines/gail/result/Hopper-unnormalized-deterministic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/Hopper-unnormalized-stochastic-scores.png b/baselines/gail/result/Hopper-unnormalized-stochastic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex 6914216..0000000[m
+Binary files a/baselines/gail/result/Hopper-unnormalized-stochastic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/Humanoid-normalized-deterministic-scores.png b/baselines/gail/result/Humanoid-normalized-deterministic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex 728a97e..0000000[m
+Binary files a/baselines/gail/result/Humanoid-normalized-deterministic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/Humanoid-normalized-stochastic-scores.png b/baselines/gail/result/Humanoid-normalized-stochastic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex 4c71789..0000000[m
+Binary files a/baselines/gail/result/Humanoid-normalized-stochastic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/Humanoid-unnormalized-deterministic-scores.png b/baselines/gail/result/Humanoid-unnormalized-deterministic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex b41eaca..0000000[m
+Binary files a/baselines/gail/result/Humanoid-unnormalized-deterministic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/Humanoid-unnormalized-stochastic-scores.png b/baselines/gail/result/Humanoid-unnormalized-stochastic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex a8bc924..0000000[m
+Binary files a/baselines/gail/result/Humanoid-unnormalized-stochastic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/HumanoidStandup-normalized-deterministic-scores.png b/baselines/gail/result/HumanoidStandup-normalized-deterministic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex 97965ec..0000000[m
+Binary files a/baselines/gail/result/HumanoidStandup-normalized-deterministic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/HumanoidStandup-normalized-stochastic-scores.png b/baselines/gail/result/HumanoidStandup-normalized-stochastic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex 7456419..0000000[m
+Binary files a/baselines/gail/result/HumanoidStandup-normalized-stochastic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/HumanoidStandup-unnormalized-deterministic-scores.png b/baselines/gail/result/HumanoidStandup-unnormalized-deterministic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex a3ab675..0000000[m
+Binary files a/baselines/gail/result/HumanoidStandup-unnormalized-deterministic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/HumanoidStandup-unnormalized-stochastic-scores.png b/baselines/gail/result/HumanoidStandup-unnormalized-stochastic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex 974e0e9..0000000[m
+Binary files a/baselines/gail/result/HumanoidStandup-unnormalized-stochastic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/Walker2d-normalized-deterministic-scores.png b/baselines/gail/result/Walker2d-normalized-deterministic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex 5a73748..0000000[m
+Binary files a/baselines/gail/result/Walker2d-normalized-deterministic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/Walker2d-normalized-stochastic-scores.png b/baselines/gail/result/Walker2d-normalized-stochastic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex fe54c92..0000000[m
+Binary files a/baselines/gail/result/Walker2d-normalized-stochastic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/Walker2d-unnormalized-deterministic-scores.png b/baselines/gail/result/Walker2d-unnormalized-deterministic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex 0ec0f37..0000000[m
+Binary files a/baselines/gail/result/Walker2d-unnormalized-deterministic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/Walker2d-unnormalized-stochastic-scores.png b/baselines/gail/result/Walker2d-unnormalized-stochastic-scores.png[m
+[1mdeleted file mode 100644[m
+[1mindex 4cef338..0000000[m
+Binary files a/baselines/gail/result/Walker2d-unnormalized-stochastic-scores.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/gail-result.md b/baselines/gail/result/gail-result.md[m
+[1mdeleted file mode 100644[m
+[1mindex 8ecc9ed..0000000[m
+[1m--- a/baselines/gail/result/gail-result.md[m
+[1m+++ /dev/null[m
+[36m@@ -1,53 +0,0 @@[m
+[31m-# Results of GAIL/BC on Mujoco[m
+[31m-[m
+[31m-Here's the extensive experimental results of applying GAIL/BC on Mujoco environments, including [m
+[31m-Hopper-v1, Walker2d-v1, HalfCheetah-v1, Humanoid-v1, HumanoidStandup-v1. Every imitator is evaluated with seed to be 0.[m
+[31m-[m
+[31m-## Results[m
+[31m-[m
+[31m-### Training through iterations[m
+[31m-[m
+[31m-- Hoppers-v1[m
+[31m-<img src='hopper-training.png'> [m
+[31m-[m
+[31m-- HalfCheetah-v1[m
+[31m-<img src='halfcheetah-training.png'> [m
+[31m-[m
+[31m-- Walker2d-v1[m
+[31m-<img src='walker2d-training.png'> [m
+[31m-[m
+[31m-- Humanoid-v1[m
+[31m-<img src='humanoid-training.png'> [m
+[31m-[m
+[31m-- HumanoidStandup-v1[m
+[31m-<img src='humanoidstandup-training.png'> [m
+[31m-[m
+[31m-For details (e.g., adversarial loss, discriminator accuracy, etc.) about GAIL training, please see [here](https://drive.google.com/drive/folders/1nnU8dqAV9i37-_5_vWIspyFUJFQLCsDD?usp=sharing)[m
+[31m-[m
+[31m-### Determinstic Policy (Set std=0)[m
+[31m-|   | Un-normalized | Normalized |[m
+[31m-|---|---|---|[m
+[31m-| Hopper-v1 | <img src='Hopper-unnormalized-deterministic-scores.png'> | <img src='Hopper-normalized-deterministic-scores.png'> |[m
+[31m-| HalfCheetah-v1 | <img src='HalfCheetah-unnormalized-deterministic-scores.png'> | <img src='HalfCheetah-normalized-deterministic-scores.png'> |[m
+[31m-| Walker2d-v1 | <img src='Walker2d-unnormalized-deterministic-scores.png'> | <img src='Walker2d-normalized-deterministic-scores.png'> |[m
+[31m-| Humanoid-v1 | <img src='Humanoid-unnormalized-deterministic-scores.png'> | <img src='Humanoid-normalized-deterministic-scores.png'> |[m
+[31m-| HumanoidStandup-v1 | <img src='HumanoidStandup-unnormalized-deterministic-scores.png'> | <img src='HumanoidStandup-normalized-deterministic-scores.png'> |[m
+[31m-[m
+[31m-### Stochatic Policy [m
+[31m-|   | Un-normalized | Normalized |[m
+[31m-|---|---|---|[m
+[31m-| Hopper-v1 | <img src='Hopper-unnormalized-stochastic-scores.png'> | <img src='Hopper-normalized-stochastic-scores.png'> |[m
+[31m-| HalfCheetah-v1 | <img src='HalfCheetah-unnormalized-stochastic-scores.png'> | <img src='HalfCheetah-normalized-stochastic-scores.png'> |[m
+[31m-| Walker2d-v1 | <img src='Walker2d-unnormalized-stochastic-scores.png'> | <img src='Walker2d-normalized-stochastic-scores.png'> |[m
+[31m-| Humanoid-v1 | <img src='Humanoid-unnormalized-stochastic-scores.png'> | <img src='Humanoid-normalized-stochastic-scores.png'> |[m
+[31m-| HumanoidStandup-v1 | <img src='HumanoidStandup-unnormalized-stochastic-scores.png'> | <img src='HumanoidStandup-normalized-stochastic-scores.png'> |[m
+[31m-[m
+[31m-### details about GAIL imitator[m
+[31m-[m
+[31m-For all environments, the [m
+[31m-imitator is trained with 1, 5, 10, 50 trajectories, where each trajectory contains at most [m
+[31m-1024 transitions, and seed 0, 1, 2, 3, respectively.[m
+[31m-[m
+[31m-### details about the BC imitators[m
+[31m-[m
+[31m-All BC imitators are trained with seed 0.[m
+[1mdiff --git a/baselines/gail/result/halfcheetah-training.png b/baselines/gail/result/halfcheetah-training.png[m
+[1mdeleted file mode 100644[m
+[1mindex 9619660..0000000[m
+Binary files a/baselines/gail/result/halfcheetah-training.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/hopper-training.png b/baselines/gail/result/hopper-training.png[m
+[1mdeleted file mode 100644[m
+[1mindex 0998c01..0000000[m
+Binary files a/baselines/gail/result/hopper-training.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/humanoid-training.png b/baselines/gail/result/humanoid-training.png[m
+[1mdeleted file mode 100644[m
+[1mindex cf558f0..0000000[m
+Binary files a/baselines/gail/result/humanoid-training.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/humanoidstandup-training.png b/baselines/gail/result/humanoidstandup-training.png[m
+[1mdeleted file mode 100644[m
+[1mindex 789ebc5..0000000[m
+Binary files a/baselines/gail/result/humanoidstandup-training.png and /dev/null differ
+[1mdiff --git a/baselines/gail/result/walker2d-training.png b/baselines/gail/result/walker2d-training.png[m
+[1mdeleted file mode 100644[m
+[1mindex 6e6eda9..0000000[m
+Binary files a/baselines/gail/result/walker2d-training.png and /dev/null differ
+[1mdiff --git a/baselines/her/README.md b/baselines/her/README.md[m
+[1mdeleted file mode 100644[m
+[1mindex 232b505..0000000[m
+[1m--- a/baselines/her/README.md[m
+[1m+++ /dev/null[m
+[36m@@ -1,85 +0,0 @@[m
+[31m-# Hindsight Experience Replay[m
+[31m-For details on Hindsight Experience Replay (HER), please read the [paper](https://arxiv.org/abs/1707.01495).[m
+[31m-[m
+[31m-## How to use Hindsight Experience Replay[m
+[31m-[m
+[31m-### Getting started[m
+[31m-Training an agent is very simple:[m
+[31m-```bash[m
+[31m-python -m baselines.run --alg=her --env=FetchReach-v1 --num_timesteps=5000[m
+[31m-```[m
+[31m-This will train a DDPG+HER agent on the `FetchReach` environment.[m
+[31m-You should see the success rate go up quickly to `1.0`, which means that the agent achieves the[m
+[31m-desired goal in 100% of the cases (note how HER can solve it in <5k steps - try doing that with PPO by replacing her with ppo2 :))[m
+[31m-The training script logs other diagnostics as well. Policy at the end of the training can be saved using `--save_path` flag, for instance:[m
+[31m-```bash[m
+[31m-python -m baselines.run --alg=her --env=FetchReach-v1 --num_timesteps=5000 --save_path=~/policies/her/fetchreach5k[m
+[31m-```[m
+[31m-[m
+[31m-To inspect what the agent has learned, use the `--play` flag: [m
+[31m-```bash[m
+[31m-python -m baselines.run --alg=her --env=FetchReach-v1 --num_timesteps=5000 --play[m
+[31m-```[m
+[31m-(note `--play` can be combined with `--load_path`, which lets one load trained policies, for more results see [README.md](../../README.md))[m
+[31m-[m
+[31m-[m
+[31m-### Reproducing results[m
+[31m-In [Plappert et al. (2018)](https://arxiv.org/abs/1802.09464), 38 trajectories were generated in parallel[m
+[31m-(19 MPI processes, each generating computing gradients from 2 trajectories and aggregating). [m
+[31m-To reproduce that behaviour, use [m
+[31m-```bash[m
+[31m-mpirun -np 19 python -m baselines.run --num_env=2 --alg=her ... [m
+[31m-```[m
+[31m-This will require a machine with sufficient amount of physical CPU cores. In our experiments,[m
+[31m-we used [Azure's D15v2 instances](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/sizes),[m
+[31m-which have 20 physical cores. We only scheduled the experiment on 19 of those to leave some head-room on the system.[m
+[31m-[m
+[31m-[m
+[31m-## Hindsight Experience Replay with Demonstrations[m
+[31m-Using pre-recorded demonstrations to Overcome the exploration problem in HER based Reinforcement learning.[m
+[31m-For details, please read the [paper](https://arxiv.org/pdf/1709.10089.pdf).[m
+[31m-[m
+[31m-### Getting started[m
+[31m-The first step is to generate the demonstration dataset. This can be done in two ways, either by using a VR system to manipulate the arm using physical VR trackers or the simpler way is to write a script to carry out the respective task. Now some tasks can be complex and thus it would be difficult to write a hardcoded script for that task (eg. Fetch Push), but here our focus is on providing an algorithm that helps the agent to learn from demonstrations, and not on the demonstration generation paradigm itself. Thus the data collection part is left to the reader's choice.[m
+[31m-[m
+[31m-We provide a script for the Fetch Pick and Place task, to generate demonstrations for the Pick and Place task execute:[m
+[31m-```bash[m
+[31m-python experiment/data_generation/fetch_data_generation.py[m
+[31m-```[m
+[31m-This outputs ```data_fetch_random_100.npz``` file which is our data file.[m
+[31m-[m
+[31m-To launch training with demonstrations (more technically, with behaviour cloning loss as an auxilliary loss), run the following[m
+[31m-```bash[m
+[31m-python -m baselines.run --alg=her --env=FetchPickAndPlace-v1 --num_timesteps=2.5e6 --demo_file=/Path/to/demo_file.npz[m
+[31m-```[m
+[31m-This will train a DDPG+HER agent on the `FetchPickAndPlace` environment by using previously generated demonstration data.[m
+[31m-To inspect what the agent has learned, use the `--play` flag as described above.[m
+[31m-[m
+[31m-#### Configuration[m
+[31m-The provided configuration is for training an agent with HER without demonstrations, we need to change a few paramters for the HER algorithm to learn through demonstrations, to do that, set:[m
+[31m-[m
+[31m-* bc_loss: 1 - whether or not to use the behavior cloning loss as an auxilliary loss[m
+[31m-* q_filter: 1 - whether or not a Q value filter should be used on the Actor outputs[m
+[31m-* num_demo: 100 - number of expert demo episodes[m
+[31m-* demo_batch_size: 128 - number of samples to be used from the demonstrations buffer, per mpi thread[m
+[31m-* prm_loss_weight: 0.001 - Weight corresponding to the primary loss[m
+[31m-* aux_loss_weight:  0.0078 - Weight corresponding to the auxilliary loss also called the cloning loss[m
+[31m-[m
+[31m-Apart from these changes the reported results also have the following configurational changes:[m
+[31m-[m
+[31m-* n_cycles: 20 - per epoch[m
+[31m-* batch_size: 1024 - per mpi thread, total batch size[m
+[31m-* random_eps: 0.1  - percentage of time a random action is taken[m
+[31m-* noise_eps: 0.1  - std of gaussian noise added to not-completely-random actions[m
+[31m-[m
+[31m-These parameters can be changed either in [experiment/config.py](experiment/config.py) or passed to the command line as `--param=value`)[m
+[31m-[m
+[31m-### Results[m
+[31m-Training with demonstrations helps overcome the exploration problem and achieves a faster and better convergence. The following graphs contrast the difference between training with and without demonstration data, We report the mean Q values vs Epoch and the Success Rate vs Epoch:[m
+[31m-[m
+[31m-[m
+[31m-<div class="imgcap" align="middle">[m
+[31m-<center><img src="../../data/fetchPickAndPlaceContrast.png"></center>[m
+[31m-<div class="thecap" align="middle"><b>Training results for Fetch Pick and Place task constrasting between training with and without demonstration data.</b></div>[m
+[31m-</div>[m
+[31m-[m
+[1mdiff --git a/baselines/her/__pycache__/__init__.cpython-37.pyc b/baselines/her/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b62b730[m
+Binary files /dev/null and b/baselines/her/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/her/__pycache__/actor_critic.cpython-37.pyc b/baselines/her/__pycache__/actor_critic.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..4635f4f[m
+Binary files /dev/null and b/baselines/her/__pycache__/actor_critic.cpython-37.pyc differ
+[1mdiff --git a/baselines/her/__pycache__/ddpg.cpython-37.pyc b/baselines/her/__pycache__/ddpg.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..fd0854b[m
+Binary files /dev/null and b/baselines/her/__pycache__/ddpg.cpython-37.pyc differ
+[1mdiff --git a/baselines/her/__pycache__/her.cpython-37.pyc b/baselines/her/__pycache__/her.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b945131[m
+Binary files /dev/null and b/baselines/her/__pycache__/her.cpython-37.pyc differ
+[1mdiff --git a/baselines/her/__pycache__/her_sampler.cpython-37.pyc b/baselines/her/__pycache__/her_sampler.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..a7291c5[m
+Binary files /dev/null and b/baselines/her/__pycache__/her_sampler.cpython-37.pyc differ
+[1mdiff --git a/baselines/her/__pycache__/normalizer.cpython-37.pyc b/baselines/her/__pycache__/normalizer.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..93a714d[m
+Binary files /dev/null and b/baselines/her/__pycache__/normalizer.cpython-37.pyc differ
+[1mdiff --git a/baselines/her/__pycache__/replay_buffer.cpython-37.pyc b/baselines/her/__pycache__/replay_buffer.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..9a31970[m
+Binary files /dev/null and b/baselines/her/__pycache__/replay_buffer.cpython-37.pyc differ
+[1mdiff --git a/baselines/her/__pycache__/rollout.cpython-37.pyc b/baselines/her/__pycache__/rollout.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..2363627[m
+Binary files /dev/null and b/baselines/her/__pycache__/rollout.cpython-37.pyc differ
+[1mdiff --git a/baselines/her/__pycache__/util.cpython-37.pyc b/baselines/her/__pycache__/util.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..44f16cf[m
+Binary files /dev/null and b/baselines/her/__pycache__/util.cpython-37.pyc differ
+[1mdiff --git a/baselines/her/experiment/__pycache__/__init__.cpython-37.pyc b/baselines/her/experiment/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..103b8e0[m
+Binary files /dev/null and b/baselines/her/experiment/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/her/experiment/__pycache__/config.cpython-37.pyc b/baselines/her/experiment/__pycache__/config.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..dc0e3aa[m
+Binary files /dev/null and b/baselines/her/experiment/__pycache__/config.cpython-37.pyc differ
+[1mdiff --git a/baselines/her/experiment/__pycache__/play.cpython-37.pyc b/baselines/her/experiment/__pycache__/play.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..248ee4a[m
+Binary files /dev/null and b/baselines/her/experiment/__pycache__/play.cpython-37.pyc differ
+[1mdiff --git a/baselines/her/experiment/__pycache__/plot.cpython-37.pyc b/baselines/her/experiment/__pycache__/plot.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e521343[m
+Binary files /dev/null and b/baselines/her/experiment/__pycache__/plot.cpython-37.pyc differ
+[1mdiff --git a/baselines/her/experiment/data_generation/fetch_data_generation.py b/baselines/her/experiment/data_generation/fetch_data_generation.py[m
+[1mdeleted file mode 100644[m
+[1mindex 0a0a755..0000000[m
+[1m--- a/baselines/her/experiment/data_generation/fetch_data_generation.py[m
+[1m+++ /dev/null[m
+[36m@@ -1,126 +0,0 @@[m
+[31m-import gym[m
+[31m-import numpy as np[m
+[31m-[m
+[31m-[m
+[31m-"""Data generation for the case of a single block pick and place in Fetch Env"""[m
+[31m-[m
+[31m-actions = [][m
+[31m-observations = [][m
+[31m-infos = [][m
+[31m-[m
+[31m-def main():[m
+[31m-    env = gym.make('FetchPickAndPlace-v1')[m
+[31m-    numItr = 100[m
+[31m-    initStateSpace = "random"[m
+[31m-    env.reset()[m
+[31m-    print("Reset!")[m
+[31m-    while len(actions) < numItr:[m
+[31m-        obs = env.reset()[m
+[31m-        print("ITERATION NUMBER ", len(actions))[m
+[31m-        goToGoal(env, obs)[m
+[31m-[m
+[31m-[m
+[31m-    fileName = "data_fetch"[m
+[31m-    fileName += "_" + initStateSpace[m
+[31m-    fileName += "_" + str(numItr)[m
+[31m-    fileName += ".npz"[m
+[31m-[m
+[31m-    np.savez_compressed(fileName, acs=actions, obs=observations, info=infos) # save the file[m
+[31m-[m
+[31m-def goToGoal(env, lastObs):[m
+[31m-[m
+[31m-    goal = lastObs['desired_goal'][m
+[31m-    objectPos = lastObs['observation'][3:6][m
+[31m-    object_rel_pos = lastObs['observation'][6:9][m
+[31m-    episodeAcs = [][m
+[31m-    episodeObs = [][m
+[31m-    episodeInfo = [][m
+[31m-[m
+[31m-    object_oriented_goal = object_rel_pos.copy()[m
+[31m-    object_oriented_goal[2] += 0.03 # first make the gripper go slightly above the object[m
+[31m-[m
+[31m-    timeStep = 0 #count the total number of timesteps[m
+[31m-    episodeObs.append(lastObs)[m
+[31m-[m
+[31m-    while np.linalg.norm(object_oriented_goal) >= 0.005 and timeStep <= env._max_episode_steps:[m
+[31m-        env.render()[m
+[31m-        action = [0, 0, 0, 0][m
+[31m-        object_oriented_goal = object_rel_pos.copy()[m
+[31m-        object_oriented_goal[2] += 0.03[m
+[31m-[m
+[31m-        for i in range(len(object_oriented_goal)):[m
+[31m-            action[i] = object_oriented_goal[i]*6[m
+[31m-[m
+[31m-        action[len(action)-1] = 0.05 #open[m
+[31m-[m
+[31m-        obsDataNew, reward, done, info = env.step(action)[m
+[31m-        timeStep += 1[m
+[31m-[m
+[31m-        episodeAcs.append(action)[m
+[31m-        episodeInfo.append(info)[m
+[31m-        episodeObs.append(obsDataNew)[m
+[31m-[m
+[31m-        objectPos = obsDataNew['observation'][3:6][m
+[31m-        object_rel_pos = obsDataNew['observation'][6:9][m
+[31m-[m
+[31m-    while np.linalg.norm(object_rel_pos) >= 0.005 and timeStep <= env._max_episode_steps :[m
+[31m-        env.render()[m
+[31m-        action = [0, 0, 0, 0][m
+[31m-        for i in range(len(object_rel_pos)):[m
+[31m-            action[i] = object_rel_pos[i]*6[m
+[31m-[m
+[31m-        action[len(action)-1] = -0.005[m
+[31m-[m
+[31m-        obsDataNew, reward, done, info = env.step(action)[m
+[31m-        timeStep += 1[m
+[31m-[m
+[31m-        episodeAcs.append(action)[m
+[31m-        episodeInfo.append(info)[m
+[31m-        episodeObs.append(obsDataNew)[m
+[31m-[m
+[31m-        objectPos = obsDataNew['observation'][3:6][m
+[31m-        object_rel_pos = obsDataNew['observation'][6:9][m
+[31m-[m
+[31m-[m
+[31m-    while np.linalg.norm(goal - objectPos) >= 0.01 and timeStep <= env._max_episode_steps :[m
+[31m-        env.render()[m
+[31m-        action = [0, 0, 0, 0][m
+[31m-        for i in range(len(goal - objectPos)):[m
+[31m-            action[i] = (goal - objectPos)[i]*6[m
+[31m-[m
+[31m-        action[len(action)-1] = -0.005[m
+[31m-[m
+[31m-        obsDataNew, reward, done, info = env.step(action)[m
+[31m-        timeStep += 1[m
+[31m-[m
+[31m-        episodeAcs.append(action)[m
+[31m-        episodeInfo.append(info)[m
+[31m-        episodeObs.append(obsDataNew)[m
+[31m-[m
+[31m-        objectPos = obsDataNew['observation'][3:6][m
+[31m-        object_rel_pos = obsDataNew['observation'][6:9][m
+[31m-[m
+[31m-    while True: #limit the number of timesteps in the episode to a fixed duration[m
+[31m-        env.render()[m
+[31m-        action = [0, 0, 0, 0][m
+[31m-        action[len(action)-1] = -0.005 # keep the gripper closed[m
+[31m-[m
+[31m-        obsDataNew, reward, done, info = env.step(action)[m
+[31m-        timeStep += 1[m
+[31m-[m
+[31m-        episodeAcs.append(action)[m
+[31m-        episodeInfo.append(info)[m
+[31m-        episodeObs.append(obsDataNew)[m
+[31m-[m
+[31m-        objectPos = obsDataNew['observation'][3:6][m
+[31m-        object_rel_pos = obsDataNew['observation'][6:9][m
+[31m-[m
+[31m-        if timeStep >= env._max_episode_steps: break[m
+[31m-[m
+[31m-    actions.append(episodeAcs)[m
+[31m-    observations.append(episodeObs)[m
+[31m-    infos.append(episodeInfo)[m
+[31m-[m
+[31m-[m
+[31m-if __name__ == "__main__":[m
+[31m-    main()[m
+[1mdiff --git a/baselines/ppo1/README.md b/baselines/ppo1/README.md[m
+[1mdeleted file mode 100644[m
+[1mindex 1faf5ad..0000000[m
+[1m--- a/baselines/ppo1/README.md[m
+[1m+++ /dev/null[m
+[36m@@ -1,9 +0,0 @@[m
+[31m-# PPOSGD[m
+[31m-[m
+[31m-- Original paper: https://arxiv.org/abs/1707.06347[m
+[31m-- Baselines blog post: https://blog.openai.com/openai-baselines-ppo/[m
+[31m-- `mpirun -np 8 python -m baselines.ppo1.run_atari` runs the algorithm for 40M frames = 10M timesteps on an Atari game. See help (`-h`) for more options.[m
+[31m-- `python -m baselines.ppo1.run_mujoco` runs the algorithm for 1M frames on a Mujoco environment.[m
+[31m-[m
+[31m-- Train mujoco 3d humanoid (with optimal-ish hyperparameters): `mpirun -np 16 python -m baselines.ppo1.run_humanoid --model-path=/path/to/model`[m
+[31m-- Render the 3d humanoid: `python -m baselines.ppo1.run_humanoid --play --model-path=/path/to/model`[m
+[1mdiff --git a/baselines/ppo1/__pycache__/__init__.cpython-37.pyc b/baselines/ppo1/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..bd93310[m
+Binary files /dev/null and b/baselines/ppo1/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/ppo1/__pycache__/cnn_policy.cpython-37.pyc b/baselines/ppo1/__pycache__/cnn_policy.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..95cf34e[m
+Binary files /dev/null and b/baselines/ppo1/__pycache__/cnn_policy.cpython-37.pyc differ
+[1mdiff --git a/baselines/ppo1/__pycache__/mlp_policy.cpython-37.pyc b/baselines/ppo1/__pycache__/mlp_policy.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..23277e5[m
+Binary files /dev/null and b/baselines/ppo1/__pycache__/mlp_policy.cpython-37.pyc differ
+[1mdiff --git a/baselines/ppo1/__pycache__/pposgd_simple.cpython-37.pyc b/baselines/ppo1/__pycache__/pposgd_simple.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..69692b0[m
+Binary files /dev/null and b/baselines/ppo1/__pycache__/pposgd_simple.cpython-37.pyc differ
+[1mdiff --git a/baselines/ppo1/__pycache__/run_atari.cpython-37.pyc b/baselines/ppo1/__pycache__/run_atari.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..de18848[m
+Binary files /dev/null and b/baselines/ppo1/__pycache__/run_atari.cpython-37.pyc differ
+[1mdiff --git a/baselines/ppo1/__pycache__/run_humanoid.cpython-37.pyc b/baselines/ppo1/__pycache__/run_humanoid.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..ea253d4[m
+Binary files /dev/null and b/baselines/ppo1/__pycache__/run_humanoid.cpython-37.pyc differ
+[1mdiff --git a/baselines/ppo1/__pycache__/run_mujoco.cpython-37.pyc b/baselines/ppo1/__pycache__/run_mujoco.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..f315d6a[m
+Binary files /dev/null and b/baselines/ppo1/__pycache__/run_mujoco.cpython-37.pyc differ
+[1mdiff --git a/baselines/ppo1/__pycache__/run_robotics.cpython-37.pyc b/baselines/ppo1/__pycache__/run_robotics.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..fbac450[m
+Binary files /dev/null and b/baselines/ppo1/__pycache__/run_robotics.cpython-37.pyc differ
+[1mdiff --git a/baselines/ppo2/README.md b/baselines/ppo2/README.md[m
+[1mdeleted file mode 100644[m
+[1mindex 4d431bc..0000000[m
+[1m--- a/baselines/ppo2/README.md[m
+[1m+++ /dev/null[m
+[36m@@ -1,8 +0,0 @@[m
+[31m-# PPO2[m
+[31m-[m
+[31m-- Original paper: https://arxiv.org/abs/1707.06347[m
+[31m-- Baselines blog post: https://blog.openai.com/openai-baselines-ppo/[m
+[31m-[m
+[31m-- `python -m baselines.run --alg=ppo2 --env=PongNoFrameskip-v4` runs the algorithm for 40M frames = 10M timesteps on an Atari Pong. See help (`-h`) for more options.[m
+[31m-- `python -m baselines.run --alg=ppo2 --env=Ant-v2 --num_timesteps=1e6` runs the algorithm for 1M frames on a Mujoco Ant environment.[m
+[31m-- also refer to the repo-wide [README.md](../../README.md#training-models)[m
+[1mdiff --git a/baselines/ppo2/__pycache__/__init__.cpython-37.pyc b/baselines/ppo2/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..9803387[m
+Binary files /dev/null and b/baselines/ppo2/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/ppo2/__pycache__/defaults.cpython-37.pyc b/baselines/ppo2/__pycache__/defaults.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..745ec19[m
+Binary files /dev/null and b/baselines/ppo2/__pycache__/defaults.cpython-37.pyc differ
+[1mdiff --git a/baselines/ppo2/__pycache__/microbatched_model.cpython-37.pyc b/baselines/ppo2/__pycache__/microbatched_model.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..b28d6ee[m
+Binary files /dev/null and b/baselines/ppo2/__pycache__/microbatched_model.cpython-37.pyc differ
+[1mdiff --git a/baselines/ppo2/__pycache__/model.cpython-37.pyc b/baselines/ppo2/__pycache__/model.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..337db6e[m
+Binary files /dev/null and b/baselines/ppo2/__pycache__/model.cpython-37.pyc differ
+[1mdiff --git a/baselines/ppo2/__pycache__/ppo2.cpython-37.pyc b/baselines/ppo2/__pycache__/ppo2.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..c40f11c[m
+Binary files /dev/null and b/baselines/ppo2/__pycache__/ppo2.cpython-37.pyc differ
+[1mdiff --git a/baselines/ppo2/__pycache__/runner.cpython-37.pyc b/baselines/ppo2/__pycache__/runner.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..4ef75e6[m
+Binary files /dev/null and b/baselines/ppo2/__pycache__/runner.cpython-37.pyc differ
+[1mdiff --git a/baselines/ppo2/__pycache__/test_microbatches.cpython-37.pyc b/baselines/ppo2/__pycache__/test_microbatches.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..554f767[m
+Binary files /dev/null and b/baselines/ppo2/__pycache__/test_microbatches.cpython-37.pyc differ
+[1mdiff --git a/baselines/ppo2/ppo2.py b/baselines/ppo2/ppo2.py[m
+[1mindex d307e9b..7b366ba 100644[m
+[1m--- a/baselines/ppo2/ppo2.py[m
+[1m+++ b/baselines/ppo2/ppo2.py[m
+[36m@@ -85,7 +85,7 @@[m [mdef learn(*, network, env, total_timesteps, eval_env = None, seed=None, nsteps=2[m
+     else: assert callable(cliprange)[m
+     total_timesteps = int(total_timesteps)[m
+ [m
+[31m-    policy = build_policy(env, network, **network_kwargs)[m
+[32m+[m[32m    policy = build_policy(env, network, percent=network_kwargs.percent, **network_kwargs)[m
+ [m
+     # Get the nb of env[m
+     nenvs = env.num_envs[m
+[1mdiff --git a/baselines/ppo2/runner.py b/baselines/ppo2/runner.py[m
+[1mindex 5a30505..2fa9f63 100644[m
+[1m--- a/baselines/ppo2/runner.py[m
+[1m+++ b/baselines/ppo2/runner.py[m
+[36m@@ -1,5 +1,52 @@[m
+ import numpy as np[m
+ from baselines.common.runners import AbstractEnvRunner[m
+[32m+[m[32mimport random[m
+[32m+[m[32mimport tensorflow as tf[m
+[32m+[m
+[32m+[m[32mdef occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):[m
+[32m+[m[32m    '''[m
+[32m+[m[32m    Args:[m
+[32m+[m[32m        data - the tensor / matrix to occlude[m
+[32m+[m[32m        percent (default=.5) - the percent of pixels to occlude as a decimal[m
+[32m+[m[32m        height (default=84) - the height of the tensor[m
+[32m+[m[32m        width (default=84) - the width of the tensor[m
+[32m+[m[32m        gen (default=None) - what to use for the mask's data. can be an object or a function.[m
+[32m+[m[32m        attention (default=None) - the tensor of attention for attention-based occlusion[m
+[32m+[m[32m        TODO: change height and width to take from data[m
+[32m+[m
+[32m+[m[32m    Returns:[m
+[32m+[m[32m        mod - modified tensor with occlusion[m
+[32m+[m[32m    '''[m
+[32m+[m
+[32m+[m[32m    if percent > 1:[m
+[32m+[m[32m        percent = 1[m
+[32m+[m
+[32m+[m[32m    if not attention:[m
+[32m+[m[32m        m = gen() if callable(gen) else gen if type(gen) == list else None if gen == None else False[m
+[32m+[m[41m        [m
+[32m+[m[32m        if not m:[m
+[32m+[m[32m            if m == False:[m
+[32m+[m[32m                print("Warning! Invalid gen. specified, defaulting to random data generation...")[m
+[32m+[m[32m            m = np.array([0 if random.random() <= percent else 1 for x in range(height * width)])[m
+[32m+[m
+[32m+[m[32m        m = np.reshape(np.dstack([m] * 4), [4, height, width])[m
+[32m+[m
+[32m+[m[32m        mask = tf.convert_to_tensor(mask_np, dtype=tf.bool)[m
+[32m+[m[32m        mask = tf.expand_dims(tf.cast(mask, dtype=tf.float32), axis=len(mask.shape))[m
+[32m+[m[32m        data = tf.convert_to_tensor(data_np, dtype=tf.float32)[m
+[32m+[m
+[32m+[m[32m        result = mask * data[m
+[32m+[m
+[32m+[m[32m    else:[m
+[32m+[m[32m        print(f"Size of attention tensor: {tf.size(attention)}\nShape of attnetion tensor: {tf.shape(attention)}\nSize/Shape of data: {tf.size(data)} / {tf.shape(data)}")[m
+[32m+[m[32m        with tf.Session() as sess:[m
+[32m+[m[32m            aflat = tf.reshape(attention, [-1])[m
+[32m+[m[32m            m = tf.sort(aflat, axis=-1, direction="ASCENDING").eval(session=sess)[m
+[32m+[m[32m            ma = m[m.size * percent // 1][m
+[32m+[m
+[32m+[m[32m            result = tf.map_fn(lambda x: 0 if x < ma else x, attention)[m
+[32m+[m[41m        [m
+[32m+[m[32m    return result[m
+ [m
+ class Runner(AbstractEnvRunner):[m
+     """[m
+[36m@@ -26,6 +73,9 @@[m [mclass Runner(AbstractEnvRunner):[m
+         for _ in range(self.nsteps):[m
+             # Given observations, get action value and neglopacs[m
+             # We already have self.obs because Runner superclass run self.obs[:] = env.reset() on init[m
+[32m+[m
+[32m+[m[32m            self.obs = occlude(self.obs, percent=self.model.act_model.__dict__.get("percent"), attention=self.model.act_model.__dict__.get("extra"))[m
+[32m+[m
+             actions, values, self.states, neglogpacs = self.model.step(self.obs, S=self.states, M=self.dones)[m
+             mb_obs.append(self.obs.copy())[m
+             mb_actions.append(actions)[m
+[1mdiff --git a/baselines/trpo_mpi/README.md b/baselines/trpo_mpi/README.md[m
+[1mdeleted file mode 100644[m
+[1mindex 4cdbb5a..0000000[m
+[1m--- a/baselines/trpo_mpi/README.md[m
+[1m+++ /dev/null[m
+[36m@@ -1,7 +0,0 @@[m
+[31m-# trpo_mpi[m
+[31m-[m
+[31m-- Original paper: https://arxiv.org/abs/1502.05477[m
+[31m-- Baselines blog post https://blog.openai.com/openai-baselines-ppo/[m
+[31m-- `mpirun -np 16 python -m baselines.run --alg=trpo_mpi --env=PongNoFrameskip-v4` runs the algorithm for 40M frames = 10M timesteps on an Atari Pong. See help (`-h`) for more options.[m
+[31m-- `python -m baselines.run --alg=trpo_mpi --env=Ant-v2 --num_timesteps=1e6` runs the algorithm for 1M timesteps on a Mujoco Ant environment. [m
+[31m-- also refer to the repo-wide [README.md](../../README.md#training-models)[m
+[1mdiff --git a/baselines/trpo_mpi/__pycache__/__init__.cpython-37.pyc b/baselines/trpo_mpi/__pycache__/__init__.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e089bd8[m
+Binary files /dev/null and b/baselines/trpo_mpi/__pycache__/__init__.cpython-37.pyc differ
+[1mdiff --git a/baselines/trpo_mpi/__pycache__/defaults.cpython-37.pyc b/baselines/trpo_mpi/__pycache__/defaults.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..dfbe40f[m
+Binary files /dev/null and b/baselines/trpo_mpi/__pycache__/defaults.cpython-37.pyc differ
+[1mdiff --git a/baselines/trpo_mpi/__pycache__/trpo_mpi.cpython-37.pyc b/baselines/trpo_mpi/__pycache__/trpo_mpi.cpython-37.pyc[m
+[1mnew file mode 100644[m
+[1mindex 0000000..71c3e1c[m
+Binary files /dev/null and b/baselines/trpo_mpi/__pycache__/trpo_mpi.cpython-37.pyc differ
+[1mdiff --git a/readme.md b/readme.md[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8b13789[m
+[1m--- /dev/null[m
+[1m+++ b/readme.md[m
+[36m@@ -0,0 +1 @@[m
+[32m+[m
