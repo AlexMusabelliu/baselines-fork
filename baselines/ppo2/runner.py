@@ -40,7 +40,7 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
     else:
         print(f"Size of attention tensor: {tf.size(attention)}\nShape of attnetion tensor: {tf.shape(attention)}\nSize/Shape of data: {tf.size(data)} / {tf.shape(data)}")
         aflat = tf.reshape(attention, [-1])
-        m = tf.gather(aflat, tf.nn.top_k(aflat[:, 2], k=4).indices)
+        m = tf.gather(aflat, tf.nn.top_k(aflat, k=tf.size(aflat)).indices)
         #m = tf.sort(aflat, axis=-1, direction="ASCENDING").eval()
         ma = m[m.size * percent // 1]
 
