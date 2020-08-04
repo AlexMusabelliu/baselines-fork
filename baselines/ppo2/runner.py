@@ -18,10 +18,10 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
         mod - modified tensor with occlusion
     '''
     def recursive_map(inputs):
-        if inputs.get_shape().ndims >= 0:
+        if inputs.get_shape().ndims > 0:
             return tf.map_fn(recursive_map, inputs)
         else:
-            return tf.cond(tf.math.less(inputs, ma), lambda: tf.constant(0), lambda: tf.constant(inputs))
+            return tf.cond(tf.reduce_mean(inputs - ma) < 0, lambda: tf.constant(0), lambda: tf.constant(inputs))
         
     if percent > 1:
         percent = 1
