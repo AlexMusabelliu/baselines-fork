@@ -52,6 +52,7 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
         ma = tf.slice(m, [int(msize * percent)], [1])
         print(tf.size(ma), tf.shape(ma), ma)
         result = recursive_map(attention)
+        print(type(data))
         print(f"---*****Size/shape of mod tensor: {tf.size(result)} / {tf.shape(result)}")
         
     return result
