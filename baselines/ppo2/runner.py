@@ -43,7 +43,7 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
         m = tf.sort(aflat, axis=-1, direction="ASCENDING").eval()
         ma = m[m.size * percent // 1]
 
-            result = tf.map_fn(lambda x: 0 if x < ma else x, attention)
+        result = tf.map_fn(lambda x: 0 if x < ma else x, attention)
         print(f"---*****Size/shape of mod tensor: {tf.size(result)} / {tf.shape(result)}")
         
     return result
@@ -70,11 +70,12 @@ class Runner(AbstractEnvRunner):
         mb_states = self.states
         epinfos = []
         # For n in range number of steps
-        for _ in range(self.nsteps):
+        for iter_step in range(self.nsteps):
             # Given observations, get action value and neglopacs
             # We already have self.obs because Runner superclass run self.obs[:] = env.reset() on init
 
-            self.obs = occlude(self.obs, percent=self.model.act_model.__dict__.get("percent"), attention=self.model.act_model.__dict__.get("extra"))
+            if iter_step != 0:
+                self.obs = occlude(self.obs, percent=self.model.act_model.__dict__.get("percent"), attention=self.model.act_model.__dict__.get("extra"))
 
             actions, values, self.states, neglogpacs = self.model.step(self.obs, S=self.states, M=self.dones)
             mb_obs.append(self.obs.copy())
