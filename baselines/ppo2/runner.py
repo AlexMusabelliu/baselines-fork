@@ -18,10 +18,22 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
         mod - modified tensor with occlusion
     '''
     def recursive_map(inputs):
-        if inputs.get_shape().ndims > 0:
-            return tf.map_fn(recursive_map, inputs)
-        else:
-            return tf.cond(tf.reduce_mean(inputs - ma) < 0, lambda: tf.constant(0.0), lambda: inputs)
+        # inputs = tf.convert_to_tensor(inputs)
+        # if inputs.get_shape().ndims > 0:
+        #     return tf.map_fn(recursive_map, inputs)
+        # else:
+        #     return tf.cond(tf.reduce_mean(inputs - ma) < 0, lambda: tf.constant(0.0), lambda: inputs)
+        def _map(inputs):
+            r = []
+            for cur in inputs:
+                if cur.ndim > 0:
+                    r.append(_map(cur))
+                else:
+                    e = tf.cond(tf.reduce_mean(cur - ma) < 0, lambda: 0.0, lambda: float(cur))
+                    r.append(e)
+            return r
+
+        return np.array(_map(inputs))        
         
     if percent > 1:
         percent = 1
@@ -46,13 +58,14 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
         print(f"Size of attention tensor: {tf.size(attention)}\nShape of attnetion tensor: {tf.shape(attention)}\nSize/Shape of data: {tf.size(data)} / {tf.shape(data)}")
         aflat = tf.reshape(attention, [-1])
         m = tf.gather(aflat, tf.nn.top_k(aflat, k=tf.size(aflat)).indices)
-        #m = tf.sort(aflat, axis=-1, direction="ASCENDING").eval()
+        #m = tf .sort(aflat, axis=-1, direction="ASCENDING").eval()
         msize = m.get_shape().as_list()[0]
         print(type(msize))
         ma = tf.slice(m, [int(msize * percent)], [1])
         print(tf.size(ma), tf.shape(ma), ma)
-        result = recursive_map(attention)
-        print(type(data))
+        print(type(data), data.shape)
+        result = recursive_map(data)
+        
         print(f"---*****Size/shape of mod tensor: {tf.size(result)} / {tf.shape(result)}")
         
     return result
