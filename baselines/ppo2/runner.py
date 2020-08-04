@@ -42,7 +42,8 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None):
         aflat = tf.reshape(attention, [-1])
         m = tf.gather(aflat, tf.nn.top_k(aflat, k=tf.size(aflat)).indices)
         #m = tf.sort(aflat, axis=-1, direction="ASCENDING").eval()
-        ma = m[tf.size(m) * percent // 1]
+        r, c = m.get_shape().as_list()
+        ma = m[r * c * percent // 1]
 
         result = tf.map_fn(lambda x: 0 if x < ma else x, attention)
         print(f"---*****Size/shape of mod tensor: {tf.size(result)} / {tf.shape(result)}")
