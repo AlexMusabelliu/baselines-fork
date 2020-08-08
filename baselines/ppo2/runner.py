@@ -38,33 +38,33 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None, ses
     if percent > 1:
         percent = 1
 
-    if attention == None:
-        m = gen() if callable(gen) else gen if type(gen) == list else None if gen == None else False
+    # if attention == None:
+    #     m = gen() if callable(gen) else gen if type(gen) == list else None if gen == None else False
         
-        if not m:
-            if m == False:
-                print("Warning! Invalid gen. specified, defaulting to random data generation...")
-            m = np.array([0 if random.random() <= percent else 1 for x in range(height * width)])
+    #     if not m:
+    #         if m == False:
+    #             print("Warning! Invalid gen. specified, defaulting to random data generation...")
+    #         m = np.array([0 if random.random() <= percent else 1 for x in range(height * width)])
 
-        m = np.reshape(np.dstack([m] * 4), [4, height, width])
+    #     m = np.reshape(np.dstack([m] * 4), [4, height, width])
 
-        mask = tf.convert_to_tensor(mask_np, dtype=tf.bool)
-        mask = tf.expand_dims(tf.cast(mask, dtype=tf.float32), axis=len(mask.shape))
-        data = tf.convert_to_tensor(data_np, dtype=tf.float32)
+    #     mask = tf.convert_to_tensor(mask_np, dtype=tf.bool)
+    #     mask = tf.expand_dims(tf.cast(mask, dtype=tf.float32), axis=len(mask.shape))
+    #     data = tf.convert_to_tensor(data_np, dtype=tf.float32)
 
-        result = mask * data
+    #     result = mask * data
 
-    else:
-        print(f"Size of attention tensor: {tf.size(attention)}\nShape of attnetion tensor: {tf.shape(attention)}\nSize/Shape of data: {tf.size(data)} / {tf.shape(data)}")
-        print(type(attention))
+    if attention != None:
+        # print(f"Size of attention tensor: {tf.size(attention)}\nShape of attnetion tensor: {tf.shape(attention)}\nSize/Shape of data: {tf.size(data)} / {tf.shape(data)}")
+        # print(type(attention))
         aflat = tf.reshape(attention, [-1])
         m = tf.gather(aflat, tf.nn.top_k(aflat, k=tf.size(aflat)).indices)
         #m = tf .sort(aflat, axis=-1, direction="ASCENDING").eval()
         msize = m.get_shape().as_list()[0]
-        print(type(msize))
+        # print(type(msize))
         ma = tf.slice(m, [int(msize * percent)], [1]).eval(feed_dict=fd, session=sess)
-        print(tf.size(ma), tf.shape(ma), ma)
-        print(type(data), data.shape)
+        # print(tf.size(ma), tf.shape(ma), ma)
+        # print(type(data), data.shape)
         result = np.ma.filled(np.ma.masked_where(data < ma, data), fill_value=0)
         
         print(f"---*****Size/shape of mod tensor: {tf.size(result)} / {tf.shape(result)}")
@@ -97,9 +97,9 @@ class Runner(AbstractEnvRunner):
             # Given observations, get action value and neglopacs
             # We already have self.obs because Runner superclass run self.obs[:] = env.reset() on init
 
-            if iter_step != 0:
-                qs, qfd = self.model.act_model.qeval(self.obs, S=self.states, M=self.dones)
-                self.obs = occlude(self.obs, percent=self.model.act_model.__dict__.get("percent"), attention=self.model.act_model.__dict__.get("extra"), sess=qs, fd=qfd)
+            # if iter_step != 0:
+            qs, qfd = self.model.act_model.qeval(self.obs, S=self.states, M=self.dones)
+            self.obs = occlude(self.obs, percent=self.model.act_model.__dict__.get("percent"), attention=self.model.act_model.__dict__.get("extra"), sess=qs, fd=qfd)
 
             actions, values, self.states, neglogpacs = self.model.step(self.obs, S=self.states, M=self.dones)
             mb_obs.append(self.obs.copy())
