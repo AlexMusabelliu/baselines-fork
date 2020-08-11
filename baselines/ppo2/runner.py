@@ -3,19 +3,17 @@ from baselines.common.runners import AbstractEnvRunner
 import random
 import tensorflow as tf
 
-def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None, sess=None, fd=None):
+def occlude(data, percent=.5, attention=None, sess=None, fd=None):
     '''
     Args:
-        data - the tensor / matrix to occlude
+        data - a numpy array to be occluded
         percent (default=.5) - the percent of pixels to occlude as a decimal
-        height (default=84) - the height of the tensor
-        width (default=84) - the width of the tensor
-        gen (default=None) - what to use for the mask's data. can be an object or a function.
         attention (default=None) - the tensor of attention for attention-based occlusion
-        TODO: change height and width to take from data
+        sess (default=None) - the session used to calculate the occlusion threshold value
+        fd (default=None) - the feed dictionary used to calculate the occlusion threshold value
 
     Returns:
-        mod - modified tensor with occlusion
+        result - occluded version of the numpy array, data
     '''
     def recursive_map(inputs):
         # inputs = tf.convert_to_tensor(inputs)
@@ -37,22 +35,6 @@ def occlude(data, percent=.5, height=84, width=84, gen=None, attention=None, ses
         
     if percent > 1:
         percent = 1
-
-    # if attention == None:
-    #     m = gen() if callable(gen) else gen if type(gen) == list else None if gen == None else False
-        
-    #     if not m:
-    #         if m == False:
-    #             print("Warning! Invalid gen. specified, defaulting to random data generation...")
-    #         m = np.array([0 if random.random() <= percent else 1 for x in range(height * width)])
-
-    #     m = np.reshape(np.dstack([m] * 4), [4, height, width])
-
-    #     mask = tf.convert_to_tensor(mask_np, dtype=tf.bool)
-    #     mask = tf.expand_dims(tf.cast(mask, dtype=tf.float32), axis=len(mask.shape))
-    #     data = tf.convert_to_tensor(data_np, dtype=tf.float32)
-
-    #     result = mask * data
 
     if attention != None:
         # print(f"Size of attention tensor: {tf.size(attention)}\nShape of attnetion tensor: {tf.shape(attention)}\nSize/Shape of data: {tf.size(data)} / {tf.shape(data)}")
