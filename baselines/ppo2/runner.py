@@ -69,7 +69,7 @@ class Runner(AbstractEnvRunner):
         # Discount rate
         self.gamma = gamma
 
-    def run(self):
+    def run(self, occlude=False):
         # Here, we init the lists that will contain the mb of experiences
         mb_obs, mb_rewards, mb_actions, mb_values, mb_dones, mb_neglogpacs = [],[],[],[],[],[]
         mb_states = self.states
@@ -79,9 +79,9 @@ class Runner(AbstractEnvRunner):
             # Given observations, get action value and neglopacs
             # We already have self.obs because Runner superclass run self.obs[:] = env.reset() on init
 
-            # if iter_step != 0:
-            qs, qfd = self.model.act_model.qeval(self.obs, S=self.states, M=self.dones)
-            self.obs = occlude(self.obs, percent=self.model.act_model.__dict__.get("percent"), attention=self.model.act_model.__dict__.get("extra"), sess=qs, fd=qfd)
+            if occlude:
+                qs, qfd = self.model.act_model.qeval(self.obs, S=self.states, M=self.dones)
+                self.obs = occlude(self.obs, percent=self.model.act_model.__dict__.get("percent"), attention=self.model.act_model.__dict__.get("extra"), sess=qs, fd=qfd)
 
             actions, values, self.states, neglogpacs = self.model.step(self.obs, S=self.states, M=self.dones)
             mb_obs.append(self.obs.copy())
